@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -63,10 +64,27 @@ func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.Regis
 	return
 }
 
-func (store *UserMongoDBStore) FindByFilter(nameFilter string) ([]*domain.RegisteredUser, error) {
-	filter := bson.M{"first_name": "/" + nameFilter + "/"}
-	return store.filter(filter)
+func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) {
+	projection := bson.D{{"first_name", 0}, {"last_name", 0}}
+	opts := options.Find().SetProjection(projection)
+	cursor, err := store.users.Find(context.TODO(), bson.D{}, opts)
+	defer cursor.Close(context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+	return decode(cursor)
 }
+
+//func (store *UserMongoDBStore) FindByFilter(nameFilter string) ([]*domain.RegisteredUser, error) {
+//	filter := bson.D{
+//		{"first_name", primitive.Regex{Pattern: nameFilter, Options: "i"}},
+//		{"$or", []interface{}{
+//			bson.D{{"last_name", primitive.Regex{Pattern: nameFilter, Options: "i"}}},
+//		}},
+//	}
+//	return store.filter(filter)
+//}
 
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
