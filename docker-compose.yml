@@ -1,0 +1,28 @@
+version: "3.3"
+
+services:
+  company_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      USER_SERVICE_PORT: 8000
+      USER_DB_HOST: mongo
+      USER_DB_PORT: 27017
+    restart: always
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto";
+
+package company;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service UserService{
+  rpc Get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/user/{id}"
+    };
+  }
+  rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/user"
+    };
+  }
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  User user = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string phoneNumber = 5;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 6;
+
+  google.protobuf.Timestamp dateOfBirth = 7;
+  string biography = 8;
+  bool isPrivate = 9;
+  repeated Experience experiences = 10;
+  repeated Education educations = 11;
+  repeated string skills = 12;
+  repeated string interests = 13;
+  repeated string connections = 14;
+
+
+}
+
+message Experience {
+  string id = 1;
+  string title = 2;
+
+  enum EmploymentType {
+      FULL_TIME = 0;
+      PART_TIME = 1;
+      INTERNSHIP = 2;
+  }
+
+  EmploymentType employmentType = 3;
+  string companyName = 4;
+  string location = 5;
+  bool isCurrentlyWorking = 6;
+  google.protobuf.Timestamp startDate = 7;
+  google.protobuf.Timestamp endDate = 8;
+  string industry = 9;
+  string description = 10;
+}
+
+message Education {
+  string id = 1;
+  string school = 2;
+
+  enum Degree {
+      ASSOCIATE = 0;
+      BACHELORS = 1;
+      MASTERS = 2;
+      DOCTORAL = 3;
+  }
+
+  Degree degree = 3;
+  string fieldOfStudy = 4;
+  google.protobuf.Timestamp startDate = 5;
+  google.protobuf.Timestamp endDate = 6;
+  string description = 7;
+}
+
+message ConnectionRequest {
+  string id = 1;
+  User from = 2;
+  User to = 3;
+  google.protobuf.Timestamp requestTime = 4;
+}
