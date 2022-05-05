@@ -26,13 +26,13 @@ func NewServer(config *config.Config) *Server {
 
 func (server *Server) Start() {
 	mongoClient := server.initMongoClient()
-	companyStore := server.initUserStore(mongoClient)
+	userStore := server.initUserStore(mongoClient)
 
-	companyService := server.initUserService(companyStore)
+	userService := server.initUserService(userStore)
 
-	companyHandler := server.initUserHandler(companyService)
+	userHandler := server.initUserHandler(userService)
 
-	server.startGrpcServer(companyHandler)
+	server.startGrpcServer(userHandler)
 }
 
 func (server *Server) initMongoClient() *mongo.Client {
