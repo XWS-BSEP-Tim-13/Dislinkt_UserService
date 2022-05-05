@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto";
 
-package company;
+package user;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";

@@ -43,7 +43,7 @@ type RegisteredUser struct {
 	Educations  []Education          `bson:"educations"`
 	Skills      []string             `bson:"skills"`
 	Interests   []primitive.ObjectID `bson:"interests"`
-	Connections []primitive.ObjectID `bson:"experiences"`
+	Connections []primitive.ObjectID `bson:"connections"`
 }
 
 type ConnectionRequest struct {
