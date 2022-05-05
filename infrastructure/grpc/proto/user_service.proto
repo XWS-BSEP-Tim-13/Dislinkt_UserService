@@ -24,7 +24,7 @@ service UserService{
       get: "/user/filter/{filter}"
     };
   }
-  rpc RequestConnection(ConnectionRequests) returns(ConnectionResponse){
+  rpc RequestConnection(ConnectionBody) returns(ConnectionResponse){
     option (google.api.http) = {
       post: "/connection-request"
       body: "connection"
@@ -34,7 +34,7 @@ service UserService{
 }
 message ConnectionResponse{}
 
-message ConnectionRequests{
+message ConnectionBody{
   connection connect = 1;
 }
 

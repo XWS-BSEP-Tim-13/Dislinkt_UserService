@@ -51,6 +51,11 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 	return response, nil
 }
 
+//func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.) (*pb.GetAllRequest, error) {
+//	idFrom := request.From
+//	idTo := request.To
+//}
+
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()
 	if err != nil {
