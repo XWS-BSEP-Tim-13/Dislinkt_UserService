@@ -35,7 +35,21 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	return response, nil
 }
 
-//func (handler *UserHandler) FindByFilter(ctx context.Context,request *pb.)
+func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFilter) (*pb.GetAllResponse, error) {
+	filter := request.Filter
+	users, err := handler.service.FindByFilter(filter)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllResponse{
+		Users: []*pb.User{},
+	}
+	for _, user := range users {
+		current := mapUser(user)
+		response.Users = append(response.Users, current)
+	}
+	return response, nil
+}
 
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()

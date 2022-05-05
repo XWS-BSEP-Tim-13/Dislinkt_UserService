@@ -19,6 +19,10 @@ func (service *UserService) Get(id primitive.ObjectID) (*domain.RegisteredUser, 
 	return service.store.Get(id)
 }
 
+func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {
+	return service.store.FindByFilter(filter)
+}
+
 func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
 	return service.store.GetAll()
 }

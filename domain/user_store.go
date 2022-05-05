@@ -7,4 +7,5 @@ type UserStore interface {
 	GetAll() ([]*RegisteredUser, error)
 	Insert(company *RegisteredUser) error
 	DeleteAll()
+	FindByFilter(filter string) ([]*RegisteredUser, error)
 }

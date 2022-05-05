@@ -63,6 +63,11 @@ func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.Regis
 	return
 }
 
+func (store *UserMongoDBStore) FindByFilter(nameFilter string) ([]*domain.RegisteredUser, error) {
+	filter := bson.M{"first_name": "/" + nameFilter + "/"}
+	return store.filter(filter)
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser
