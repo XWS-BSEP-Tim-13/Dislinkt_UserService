@@ -18,6 +18,16 @@ service UserService{
       get: "/user"
     };
   }
+
+  rpc FindByFilter(UserFilter) returns(GetAllResponse){
+    option (google.api.http) = {
+      get: "/user/filter/{filter}"
+    };
+  }
+}
+
+message UserFilter{
+  string filter = 1;
 }
 
 message GetRequest {
