@@ -35,10 +35,10 @@ service UserService{
 message ConnectionResponse{}
 
 message ConnectionBody{
-  connection connect = 1;
+  Connection connection = 1;
 }
 
-message connection{
+message Connection{
   string idFrom = 1;
   string idTo = 2;
 }
