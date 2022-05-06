@@ -37,6 +37,11 @@ service UserService{
     };
   }
 
+  rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/{id}"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -141,4 +146,25 @@ message ConnectionRequest {
   User from = 2;
   User to = 3;
   google.protobuf.Timestamp requestTime = 4;
+}
+
+message UserInfoUpdate {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string phoneNumber = 4;
+  google.protobuf.Timestamp dateOfBirth = 5;
+  string biography = 6;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 7;
+  string email = 8;
+}
+
+message UserInfoUpdateResponse{
+  string id = 1;
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api/dto"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -93,5 +95,20 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 		current := mapUser(user)
 		response.Users = append(response.Users, current)
 	}
+	return response, nil
+}
+
+func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UserInfoUpdate) (*pb.UserInfoUpdateResponse, error) {
+	id, _ := primitive.ObjectIDFromHex(request.Id)
+	userInfo := dto.NewUserInfo(id, request.FirstName, request.LastName, enum.Gender(request.Gender), request.DateOfBirth.AsTime(),
+		request.Email, request.PhoneNumber, request.Biography)
+	user := dto.NewUserFromUserInfo(*userInfo)
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.Id
+
+	if _, err := handler.service.UpdatePersonalInfo(user); err != nil {
+		return nil, err
+	}
+
 	return response, nil
 }

@@ -9,4 +9,5 @@ type UserStore interface {
 	DeleteAll()
 	GetBasicInfo() ([]*RegisteredUser, error)
 	Update(user *RegisteredUser) error
+	UpdatePersonalInfo(user *RegisteredUser) (primitive.ObjectID, error)
 }

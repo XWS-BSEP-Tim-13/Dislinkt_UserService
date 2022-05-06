@@ -68,3 +68,7 @@ func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUse
 func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
 	return service.store.GetAll()
 }
+
+func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
+	return service.store.UpdatePersonalInfo(user)
+}

@@ -99,6 +99,25 @@ func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) 
 //	return store.filter(filter)
 //}
 
+func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
+	result, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"firstName", user.FirstName},
+				{"lastName", user.LastName},
+				{"gender", user.Gender},
+				{"phoneNumber", user.PhoneNumber},
+				{"dateOfBirth", user.DateOfBirth},
+				{"biography", user.Biography},
+			}},
+		},
+	)
+	upsertedId := fmt.Sprint(result.UpsertedID)
+	objectId, _ := primitive.ObjectIDFromHex(upsertedId)
+	return objectId, err
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser

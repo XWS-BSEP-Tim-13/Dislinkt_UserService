@@ -169,6 +169,52 @@ func (Education_Degree) EnumDescriptor() ([]byte, []int) {
 	return file_user_service_proto_rawDescGZIP(), []int{11, 0}
 }
 
+type UserInfoUpdate_Gender int32
+
+const (
+	UserInfoUpdate_MALE   UserInfoUpdate_Gender = 0
+	UserInfoUpdate_FEMALE UserInfoUpdate_Gender = 1
+)
+
+// Enum value maps for UserInfoUpdate_Gender.
+var (
+	UserInfoUpdate_Gender_name = map[int32]string{
+		0: "MALE",
+		1: "FEMALE",
+	}
+	UserInfoUpdate_Gender_value = map[string]int32{
+		"MALE":   0,
+		"FEMALE": 1,
+	}
+)
+
+func (x UserInfoUpdate_Gender) Enum() *UserInfoUpdate_Gender {
+	p := new(UserInfoUpdate_Gender)
+	*p = x
+	return p
+}
+
+func (x UserInfoUpdate_Gender) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UserInfoUpdate_Gender) Descriptor() protoreflect.EnumDescriptor {
+	return file_user_service_proto_enumTypes[3].Descriptor()
+}
+
+func (UserInfoUpdate_Gender) Type() protoreflect.EnumType {
+	return &file_user_service_proto_enumTypes[3]
+}
+
+func (x UserInfoUpdate_Gender) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UserInfoUpdate_Gender.Descriptor instead.
+func (UserInfoUpdate_Gender) EnumDescriptor() ([]byte, []int) {
+	return file_user_service_proto_rawDescGZIP(), []int{13, 0}
+}
+
 type ConnectionResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1018,6 +1064,156 @@ func (x *ConnectionRequest) GetRequestTime() *timestamppb.Timestamp {
 	return nil
 }
 
+type UserInfoUpdate struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	FirstName   string                 `protobuf:"bytes,2,opt,name=firstName,proto3" json:"firstName,omitempty"`
+	LastName    string                 `protobuf:"bytes,3,opt,name=lastName,proto3" json:"lastName,omitempty"`
+	PhoneNumber string                 `protobuf:"bytes,4,opt,name=phoneNumber,proto3" json:"phoneNumber,omitempty"`
+	DateOfBirth *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=dateOfBirth,proto3" json:"dateOfBirth,omitempty"`
+	Biography   string                 `protobuf:"bytes,6,opt,name=biography,proto3" json:"biography,omitempty"`
+	Gender      UserInfoUpdate_Gender  `protobuf:"varint,7,opt,name=gender,proto3,enum=user.UserInfoUpdate_Gender" json:"gender,omitempty"`
+	Email       string                 `protobuf:"bytes,8,opt,name=email,proto3" json:"email,omitempty"`
+}
+
+func (x *UserInfoUpdate) Reset() {
+	*x = UserInfoUpdate{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_service_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserInfoUpdate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserInfoUpdate) ProtoMessage() {}
+
+func (x *UserInfoUpdate) ProtoReflect() protoreflect.Message {
+	mi := &file_user_service_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserInfoUpdate.ProtoReflect.Descriptor instead.
+func (*UserInfoUpdate) Descriptor() ([]byte, []int) {
+	return file_user_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *UserInfoUpdate) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UserInfoUpdate) GetFirstName() string {
+	if x != nil {
+		return x.FirstName
+	}
+	return ""
+}
+
+func (x *UserInfoUpdate) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
+func (x *UserInfoUpdate) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *UserInfoUpdate) GetDateOfBirth() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DateOfBirth
+	}
+	return nil
+}
+
+func (x *UserInfoUpdate) GetBiography() string {
+	if x != nil {
+		return x.Biography
+	}
+	return ""
+}
+
+func (x *UserInfoUpdate) GetGender() UserInfoUpdate_Gender {
+	if x != nil {
+		return x.Gender
+	}
+	return UserInfoUpdate_MALE
+}
+
+func (x *UserInfoUpdate) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type UserInfoUpdateResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *UserInfoUpdateResponse) Reset() {
+	*x = UserInfoUpdateResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_service_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserInfoUpdateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserInfoUpdateResponse) ProtoMessage() {}
+
+func (x *UserInfoUpdateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_service_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserInfoUpdateResponse.ProtoReflect.Descriptor instead.
+func (*UserInfoUpdateResponse) Descriptor() ([]byte, []int) {
+	return file_user_service_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *UserInfoUpdateResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 var File_user_service_proto protoreflect.FileDescriptor
 
 var file_user_service_proto_rawDesc = []byte{
@@ -1146,7 +1342,30 @@ var file_user_service_proto_rawDesc = []byte{
 	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x52, 0x0b, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x54, 0x69, 0x6d, 0x65,
-	0x32, 0xbc, 0x03, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x22, 0xc3, 0x02, 0x0a, 0x0e, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x66, 0x69, 0x72, 0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x69, 0x72, 0x73, 0x74, 0x4e, 0x61, 0x6d,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x20, 0x0a,
+	0x0b, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0b, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12,
+	0x3c, 0x0a, 0x0b, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x66, 0x42, 0x69, 0x72, 0x74, 0x68, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x52, 0x0b, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x66, 0x42, 0x69, 0x72, 0x74, 0x68, 0x12, 0x1c, 0x0a,
+	0x09, 0x62, 0x69, 0x6f, 0x67, 0x72, 0x61, 0x70, 0x68, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x62, 0x69, 0x6f, 0x67, 0x72, 0x61, 0x70, 0x68, 0x79, 0x12, 0x33, 0x0a, 0x06, 0x67,
+	0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x75, 0x73,
+	0x65, 0x72, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x2e, 0x47, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x52, 0x06, 0x67, 0x65, 0x6e, 0x64, 0x65, 0x72,
+	0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x22, 0x1e, 0x0a, 0x06, 0x47, 0x65, 0x6e, 0x64, 0x65, 0x72,
+	0x12, 0x08, 0x0a, 0x04, 0x4d, 0x41, 0x4c, 0x45, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x45,
+	0x4d, 0x41, 0x4c, 0x45, 0x10, 0x01, 0x22, 0x28, 0x0a, 0x16, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e,
+	0x66, 0x6f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64,
+	0x32, 0x9a, 0x04, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x12, 0x3e, 0x0a, 0x03, 0x47, 0x65, 0x74, 0x12, 0x10, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x47,
 	0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x75, 0x73, 0x65, 0x72,
 	0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3,
@@ -1173,13 +1392,19 @@ var file_user_service_proto_rawDesc = []byte{
 	0x74, 0x1a, 0x12, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x73, 0x22, 0x28, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x22, 0x12, 0x20, 0x2f,
 	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x2d, 0x72, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x2f, 0x62, 0x79, 0x2d, 0x75, 0x73, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x42,
-	0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x58, 0x57,
-	0x53, 0x2d, 0x42, 0x53, 0x45, 0x50, 0x2d, 0x54, 0x69, 0x6d, 0x2d, 0x31, 0x33, 0x2f, 0x44, 0x69,
-	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x74, 0x5f, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72,
-	0x65, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x74, 0x2f, 0x62, 0x79, 0x2d, 0x75, 0x73, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12,
+	0x5c, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x61,
+	0x6c, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x14, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x55, 0x73, 0x65,
+	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x1a, 0x1c, 0x2e, 0x75, 0x73,
+	0x65, 0x72, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02,
+	0x0c, 0x1a, 0x0a, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x42, 0x4b, 0x5a,
+	0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x58, 0x57, 0x53, 0x2d,
+	0x42, 0x53, 0x45, 0x50, 0x2d, 0x54, 0x69, 0x6d, 0x2d, 0x31, 0x33, 0x2f, 0x44, 0x69, 0x73, 0x6c,
+	0x69, 0x6e, 0x6b, 0x74, 0x5f, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x2f,
+	0x67, 0x72, 0x70, 0x63, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -1194,60 +1419,67 @@ func file_user_service_proto_rawDescGZIP() []byte {
 	return file_user_service_proto_rawDescData
 }
 
-var file_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_user_service_proto_goTypes = []interface{}{
 	(User_Gender)(0),               // 0: user.User.Gender
 	(Experience_EmploymentType)(0), // 1: user.Experience.EmploymentType
 	(Education_Degree)(0),          // 2: user.Education.Degree
-	(*ConnectionResponse)(nil),     // 3: user.ConnectionResponse
-	(*ConnectionBody)(nil),         // 4: user.ConnectionBody
-	(*UserRequests)(nil),           // 5: user.UserRequests
-	(*Connection)(nil),             // 6: user.Connection
-	(*UserFilter)(nil),             // 7: user.UserFilter
-	(*GetRequest)(nil),             // 8: user.GetRequest
-	(*GetResponse)(nil),            // 9: user.GetResponse
-	(*GetAllRequest)(nil),          // 10: user.GetAllRequest
-	(*GetAllResponse)(nil),         // 11: user.GetAllResponse
-	(*User)(nil),                   // 12: user.User
-	(*Experience)(nil),             // 13: user.Experience
-	(*Education)(nil),              // 14: user.Education
-	(*ConnectionRequest)(nil),      // 15: user.ConnectionRequest
-	(*timestamppb.Timestamp)(nil),  // 16: google.protobuf.Timestamp
+	(UserInfoUpdate_Gender)(0),     // 3: user.UserInfoUpdate.Gender
+	(*ConnectionResponse)(nil),     // 4: user.ConnectionResponse
+	(*ConnectionBody)(nil),         // 5: user.ConnectionBody
+	(*UserRequests)(nil),           // 6: user.UserRequests
+	(*Connection)(nil),             // 7: user.Connection
+	(*UserFilter)(nil),             // 8: user.UserFilter
+	(*GetRequest)(nil),             // 9: user.GetRequest
+	(*GetResponse)(nil),            // 10: user.GetResponse
+	(*GetAllRequest)(nil),          // 11: user.GetAllRequest
+	(*GetAllResponse)(nil),         // 12: user.GetAllResponse
+	(*User)(nil),                   // 13: user.User
+	(*Experience)(nil),             // 14: user.Experience
+	(*Education)(nil),              // 15: user.Education
+	(*ConnectionRequest)(nil),      // 16: user.ConnectionRequest
+	(*UserInfoUpdate)(nil),         // 17: user.UserInfoUpdate
+	(*UserInfoUpdateResponse)(nil), // 18: user.UserInfoUpdateResponse
+	(*timestamppb.Timestamp)(nil),  // 19: google.protobuf.Timestamp
 }
 var file_user_service_proto_depIdxs = []int32{
-	6,  // 0: user.ConnectionBody.connection:type_name -> user.Connection
-	15, // 1: user.UserRequests.requests:type_name -> user.ConnectionRequest
-	12, // 2: user.GetResponse.user:type_name -> user.User
-	12, // 3: user.GetAllResponse.users:type_name -> user.User
+	7,  // 0: user.ConnectionBody.connection:type_name -> user.Connection
+	16, // 1: user.UserRequests.requests:type_name -> user.ConnectionRequest
+	13, // 2: user.GetResponse.user:type_name -> user.User
+	13, // 3: user.GetAllResponse.users:type_name -> user.User
 	0,  // 4: user.User.gender:type_name -> user.User.Gender
-	16, // 5: user.User.dateOfBirth:type_name -> google.protobuf.Timestamp
-	13, // 6: user.User.experiences:type_name -> user.Experience
-	14, // 7: user.User.educations:type_name -> user.Education
+	19, // 5: user.User.dateOfBirth:type_name -> google.protobuf.Timestamp
+	14, // 6: user.User.experiences:type_name -> user.Experience
+	15, // 7: user.User.educations:type_name -> user.Education
 	1,  // 8: user.Experience.employmentType:type_name -> user.Experience.EmploymentType
-	16, // 9: user.Experience.startDate:type_name -> google.protobuf.Timestamp
-	16, // 10: user.Experience.endDate:type_name -> google.protobuf.Timestamp
+	19, // 9: user.Experience.startDate:type_name -> google.protobuf.Timestamp
+	19, // 10: user.Experience.endDate:type_name -> google.protobuf.Timestamp
 	2,  // 11: user.Education.degree:type_name -> user.Education.Degree
-	16, // 12: user.Education.startDate:type_name -> google.protobuf.Timestamp
-	16, // 13: user.Education.endDate:type_name -> google.protobuf.Timestamp
-	12, // 14: user.ConnectionRequest.from:type_name -> user.User
-	12, // 15: user.ConnectionRequest.to:type_name -> user.User
-	16, // 16: user.ConnectionRequest.requestTime:type_name -> google.protobuf.Timestamp
-	8,  // 17: user.UserService.Get:input_type -> user.GetRequest
-	10, // 18: user.UserService.GetAll:input_type -> user.GetAllRequest
-	7,  // 19: user.UserService.FindByFilter:input_type -> user.UserFilter
-	4,  // 20: user.UserService.RequestConnection:input_type -> user.ConnectionBody
-	8,  // 21: user.UserService.GetRequestsForUser:input_type -> user.GetRequest
-	9,  // 22: user.UserService.Get:output_type -> user.GetResponse
-	11, // 23: user.UserService.GetAll:output_type -> user.GetAllResponse
-	11, // 24: user.UserService.FindByFilter:output_type -> user.GetAllResponse
-	3,  // 25: user.UserService.RequestConnection:output_type -> user.ConnectionResponse
-	5,  // 26: user.UserService.GetRequestsForUser:output_type -> user.UserRequests
-	22, // [22:27] is the sub-list for method output_type
-	17, // [17:22] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	19, // 12: user.Education.startDate:type_name -> google.protobuf.Timestamp
+	19, // 13: user.Education.endDate:type_name -> google.protobuf.Timestamp
+	13, // 14: user.ConnectionRequest.from:type_name -> user.User
+	13, // 15: user.ConnectionRequest.to:type_name -> user.User
+	19, // 16: user.ConnectionRequest.requestTime:type_name -> google.protobuf.Timestamp
+	19, // 17: user.UserInfoUpdate.dateOfBirth:type_name -> google.protobuf.Timestamp
+	3,  // 18: user.UserInfoUpdate.gender:type_name -> user.UserInfoUpdate.Gender
+	9,  // 19: user.UserService.Get:input_type -> user.GetRequest
+	11, // 20: user.UserService.GetAll:input_type -> user.GetAllRequest
+	8,  // 21: user.UserService.FindByFilter:input_type -> user.UserFilter
+	5,  // 22: user.UserService.RequestConnection:input_type -> user.ConnectionBody
+	9,  // 23: user.UserService.GetRequestsForUser:input_type -> user.GetRequest
+	17, // 24: user.UserService.UpdatePersonalInfo:input_type -> user.UserInfoUpdate
+	10, // 25: user.UserService.Get:output_type -> user.GetResponse
+	12, // 26: user.UserService.GetAll:output_type -> user.GetAllResponse
+	12, // 27: user.UserService.FindByFilter:output_type -> user.GetAllResponse
+	4,  // 28: user.UserService.RequestConnection:output_type -> user.ConnectionResponse
+	6,  // 29: user.UserService.GetRequestsForUser:output_type -> user.UserRequests
+	18, // 30: user.UserService.UpdatePersonalInfo:output_type -> user.UserInfoUpdateResponse
+	25, // [25:31] is the sub-list for method output_type
+	19, // [19:25] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_user_service_proto_init() }
@@ -1412,14 +1644,38 @@ func file_user_service_proto_init() {
 				return nil
 			}
 		}
+		file_user_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UserInfoUpdate); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_user_service_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UserInfoUpdateResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_user_service_proto_rawDesc,
-			NumEnums:      3,
-			NumMessages:   13,
+			NumEnums:      4,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
