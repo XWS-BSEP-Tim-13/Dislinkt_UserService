@@ -74,5 +74,11 @@ func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (pri
 }
 
 func (service *UserService) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
+	experience.Id = primitive.NewObjectID()
 	return service.store.AddExperience(experience, userId)
+}
+
+func (service *UserService) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
+	education.Id = primitive.NewObjectID()
+	return service.store.AddEducation(education, userId)
 }

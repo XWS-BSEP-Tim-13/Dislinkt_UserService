@@ -50,6 +50,13 @@ service UserService{
       body: "experienceUpdate"
     };
   }
+
+  rpc AddEducation(EducationUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education",
+      body: "educationUpdate"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -188,4 +195,13 @@ message NewExperience {
 
 message ExperienceUpdateRequest {
   NewExperience experienceUpdate = 1;
+}
+
+message NewEducation {
+  string userId = 1;
+  Education education = 2;
+}
+
+message EducationUpdateRequest {
+  NewEducation educationUpdate = 1;
 }

@@ -133,6 +133,20 @@ func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, user
 	return err
 }
 
+func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	educations := append(user.Educations, *education)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"educations", educations}}},
+		},
+	)
+
+	return err
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser

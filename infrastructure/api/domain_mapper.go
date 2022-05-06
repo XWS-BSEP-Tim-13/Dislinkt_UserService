@@ -24,3 +24,18 @@ func mapExperience(request *pb.Experience) *domain.Experience {
 
 	return experience
 }
+
+func mapEducation(request *pb.Education) *domain.Education {
+	educationId, _ := primitive.ObjectIDFromHex(request.Id)
+	education := &domain.Education{
+		Id:           educationId,
+		School:       request.School,
+		Degree:       enum.Degree(request.Degree),
+		FieldOfStudy: request.FieldOfStudy,
+		StartDate:    request.StartDate.AsTime(),
+		EndDate:      request.EndDate.AsTime(),
+		Description:  request.Description,
+	}
+
+	return education
+}
