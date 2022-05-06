@@ -37,6 +37,7 @@ func NewUserInfo(id primitive.ObjectID, fname string, lname string, gender enum.
 func NewUserFromUserInfo(userInfo UserInfo) *domain.RegisteredUser {
 	user := new(domain.RegisteredUser)
 	user.Id = userInfo.Id
+	user.FirstName = userInfo.FirstName
 	user.LastName = userInfo.LastName
 	user.Gender = userInfo.Gender
 	user.DateOfBirth = userInfo.DateOfBirth

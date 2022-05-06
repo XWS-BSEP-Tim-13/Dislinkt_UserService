@@ -104,12 +104,13 @@ func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (
 		context.TODO(),
 		bson.M{"_id": user.Id},
 		bson.D{
-			{"$set", bson.D{{"firstName", user.FirstName},
-				{"lastName", user.LastName},
+			{"$set", bson.D{{"first_name", user.FirstName},
+				{"last_name", user.LastName},
 				{"gender", user.Gender},
-				{"phoneNumber", user.PhoneNumber},
-				{"dateOfBirth", user.DateOfBirth},
+				{"phone_number", user.PhoneNumber},
+				{"date_of_birth", user.DateOfBirth},
 				{"biography", user.Biography},
+				{"email", user.Email},
 			}},
 		},
 	)

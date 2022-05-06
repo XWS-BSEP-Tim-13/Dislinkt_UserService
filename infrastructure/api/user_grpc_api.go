@@ -99,12 +99,12 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 }
 
 func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UserInfoUpdate) (*pb.UserInfoUpdateResponse, error) {
-	id, _ := primitive.ObjectIDFromHex(request.Id)
-	userInfo := dto.NewUserInfo(id, request.FirstName, request.LastName, enum.Gender(request.Gender), request.DateOfBirth.AsTime(),
-		request.Email, request.PhoneNumber, request.Biography)
+	id, _ := primitive.ObjectIDFromHex(request.UserInfo.Id)
+	userInfo := dto.NewUserInfo(id, request.UserInfo.FirstName, request.UserInfo.LastName, enum.Gender(request.UserInfo.Gender), request.UserInfo.DateOfBirth.AsTime(),
+		request.UserInfo.Email, request.UserInfo.PhoneNumber, request.UserInfo.Biography)
 	user := dto.NewUserFromUserInfo(*userInfo)
 	response := new(pb.UserInfoUpdateResponse)
-	response.Id = request.Id
+	response.Id = request.UserInfo.Id
 
 	if _, err := handler.service.UpdatePersonalInfo(user); err != nil {
 		return nil, err
