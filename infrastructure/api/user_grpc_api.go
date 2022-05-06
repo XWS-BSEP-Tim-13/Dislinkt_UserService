@@ -130,3 +130,16 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 
 	return response, nil
 }
+
+func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.ExperienceUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.ExperienceUpdate.UserId
+	exp := mapExperience(request.ExperienceUpdate.Experience)
+	expId, _ := primitive.ObjectIDFromHex(request.ExperienceUpdate.UserId)
+
+	if err := handler.service.AddExperience(exp, expId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

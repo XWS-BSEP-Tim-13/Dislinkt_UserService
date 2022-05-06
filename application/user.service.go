@@ -89,3 +89,7 @@ func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.
 
 	return user, nil
 }
+
+func (service *UserService) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
+	return service.store.AddExperience(experience, userId)
+}
