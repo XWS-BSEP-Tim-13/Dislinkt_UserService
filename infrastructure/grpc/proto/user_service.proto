@@ -43,6 +43,13 @@ service UserService{
       body: "userInfo"
     };
   }
+
+  rpc AddExperience(ExperienceUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience",
+      body: "experienceUpdate"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -172,4 +179,13 @@ message UserInfoUpdate {
 
 message UserInfoUpdateResponse{
   string id = 1;
+}
+
+message NewExperience {
+  string userId = 1;
+  Experience experience = 2;
+}
+
+message ExperienceUpdateRequest {
+  NewExperience experienceUpdate = 1;
 }
