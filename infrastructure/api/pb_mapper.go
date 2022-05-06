@@ -11,6 +11,7 @@ import (
 func mapUserToPB(user *domain.RegisteredUser) *pb.User {
 	userPb := &pb.User{
 		Id:          user.Id.Hex(),
+		Username:    user.Username,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
 		Email:       user.Email,
@@ -70,6 +71,7 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 	//}
 
 	user := &domain.RegisteredUser{
+		Username:    (*userPb).Username,
 		FirstName:   (*userPb).FirstName,
 		LastName:    (*userPb).LastName,
 		Email:       (*userPb).Email,

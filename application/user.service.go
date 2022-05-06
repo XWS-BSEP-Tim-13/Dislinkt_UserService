@@ -75,11 +75,11 @@ func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (pri
 }
 
 func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.RegisteredUser, error) {
-	//dbUser, _ := service.store.GetByUsername((*user).Username)
-	//if (*dbUser).Username != "" {
-	//	err := errors.New("username already exists")
-	//	return nil, err
-	//}
+	dbUser, _ := service.store.GetByUsername((*user).Username)
+	if dbUser != nil {
+		err := errors.New("username already exists")
+		return nil, err
+	}
 	(*user).Id = primitive.NewObjectID()
 	err := service.store.Insert(user)
 	if err != nil {
