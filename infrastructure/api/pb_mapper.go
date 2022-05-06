@@ -75,11 +75,12 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 		Email:       (*userPb).Email,
 		PhoneNumber: (*userPb).PhoneNumber,
 		Gender:      enum.Gender((*userPb).Gender),
-		DateOfBirth: timestamppb.Timestamp.AsTime(*((*userPb).DateOfBirth)),
+		DateOfBirth: (*((*userPb).DateOfBirth)).AsTime(),
 		Biography:   (*userPb).Biography,
 		IsPrivate:   (*userPb).IsPrivate,
 	}
 
+	user.Experiences = []domain.Experience{}
 	for _, experience := range (*userPb).Experiences {
 		id, err := primitive.ObjectIDFromHex(experience.Id)
 		if err != nil {
@@ -93,13 +94,14 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 			CompanyName:        experience.CompanyName,
 			Location:           experience.Location,
 			IsCurrentlyWorking: experience.IsCurrentlyWorking,
-			StartDate:          timestamppb.Timestamp.AsTime(*experience.StartDate),
-			EndDate:            timestamppb.Timestamp.AsTime(*experience.EndDate),
+			StartDate:          experience.StartDate.AsTime(),
+			EndDate:            experience.EndDate.AsTime(),
 			Industry:           experience.Industry,
 			Description:        experience.Description,
 		})
 	}
 
+	user.Educations = []domain.Education{}
 	for _, education := range (*userPb).Educations {
 		id, err := primitive.ObjectIDFromHex(education.Id)
 		if err != nil {
@@ -111,16 +113,18 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 			School:       education.School,
 			Degree:       enum.Degree(education.Degree),
 			FieldOfStudy: education.FieldOfStudy,
-			StartDate:    timestamppb.Timestamp.AsTime(*education.StartDate),
-			EndDate:      timestamppb.Timestamp.AsTime(*education.EndDate),
+			StartDate:    education.StartDate.AsTime(),
+			EndDate:      education.EndDate.AsTime(),
 			Description:  education.Description,
 		})
 	}
 
+	user.Skills = []string{}
 	for _, skill := range (*userPb).Skills {
 		user.Skills = append(user.Skills, skill)
 	}
 
+	user.Interests = []primitive.ObjectID{}
 	for _, interest := range (*userPb).Interests {
 		interestId, err := primitive.ObjectIDFromHex(interest)
 		if err != nil {
@@ -130,6 +134,7 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 		user.Interests = append(user.Interests, interestId)
 	}
 
+	user.Connections = []primitive.ObjectID{}
 	for _, connection := range (*userPb).Connections {
 		connectionId, err := primitive.ObjectIDFromHex(connection)
 		if err != nil {

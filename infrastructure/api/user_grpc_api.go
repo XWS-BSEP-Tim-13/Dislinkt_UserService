@@ -37,7 +37,7 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	return response, nil
 }
 
-func (handler *UserHandler) CreateNewUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
+func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
 	fmt.Println((*request).User)
 	user := mapUserToDomain(request.User)
 	fmt.Println(user)
