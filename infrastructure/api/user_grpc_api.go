@@ -44,7 +44,7 @@ func (handler *UserHandler) CreateNewUser(ctx context.Context, request *pb.NewUs
 
 	newUser, err := handler.service.CreateNewUser(user)
 	if err != nil {
-		return nil, status.Error(400, "Username already exists!")
+		return nil, status.Error(400, err.Error())
 	}
 
 	response := &pb.NewUser{

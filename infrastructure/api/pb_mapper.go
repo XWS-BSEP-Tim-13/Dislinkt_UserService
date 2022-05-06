@@ -64,13 +64,12 @@ func mapUserToPB(user *domain.RegisteredUser) *pb.User {
 }
 
 func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
-	id, err := primitive.ObjectIDFromHex((*userPb).Id)
-	if err != nil {
-		return &domain.RegisteredUser{}
-	}
+	//id, err := primitive.ObjectIDFromHex((*userPb).Id)
+	//if err != nil {
+	//	return &domain.RegisteredUser{}
+	//}
 
 	user := &domain.RegisteredUser{
-		Id:          id,
 		FirstName:   (*userPb).FirstName,
 		LastName:    (*userPb).LastName,
 		Email:       (*userPb).Email,

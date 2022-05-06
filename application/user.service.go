@@ -76,7 +76,7 @@ func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.
 	//	err := errors.New("username already exists")
 	//	return nil, err
 	//}
-	
+
 	err := service.store.Insert(user)
 	if err != nil {
 		err := errors.New("error while creating new user")
