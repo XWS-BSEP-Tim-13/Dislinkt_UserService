@@ -110,7 +110,7 @@ message User {
   repeated string interests = 13;
   repeated string connections = 14;
 
-
+  string username = 15;
 }
 
 message Experience {
