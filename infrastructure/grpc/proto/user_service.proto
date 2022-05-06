@@ -13,10 +13,14 @@ service UserService{
       get: "/user/{id}"
     };
   }
+
   rpc GetAll(GetAllRequest) returns(GetAllResponse) {
     option (google.api.http) = {
       get: "/user"
     };
+  }
+
+  rpc CreateUser(NewUser) returns(NewUser) {
   }
 
   rpc FindByFilter(UserFilter) returns(GetAllResponse){
@@ -24,6 +28,7 @@ service UserService{
       get: "/user/filter/{filter}"
     };
   }
+
   rpc RequestConnection(ConnectionBody) returns(ConnectionResponse){
     option (google.api.http) = {
       post: "/connection-request"
@@ -70,6 +75,10 @@ message GetAllRequest {
 
 message GetAllResponse {
   repeated User users = 1;
+}
+
+message NewUser {
+  User user = 1;
 }
 
 message User {

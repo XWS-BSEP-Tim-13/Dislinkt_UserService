@@ -1,6 +1,7 @@
 package application
 
 import (
+	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -67,4 +68,20 @@ func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUse
 
 func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
 	return service.store.GetAll()
+}
+
+func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.RegisteredUser, error) {
+	//dbUser, _ := service.store.GetByUsername((*user).Username)
+	//if (*dbUser).Username != "" {
+	//	err := errors.New("username already exists")
+	//	return nil, err
+	//}
+	
+	err := service.store.Insert(user)
+	if err != nil {
+		err := errors.New("error while creating new user")
+		return nil, err
+	}
+
+	return user, nil
 }

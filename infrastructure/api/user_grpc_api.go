@@ -6,6 +6,7 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
@@ -29,10 +30,27 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	userPb := mapUser(user)
+	userPb := mapUserToPB(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
+	return response, nil
+}
+
+func (handler *UserHandler) CreateNewUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
+	fmt.Println((*request).User)
+	user := mapUserToDomain(request.User)
+	fmt.Println(user)
+
+	newUser, err := handler.service.CreateNewUser(user)
+	if err != nil {
+		return nil, status.Error(400, "Username already exists!")
+	}
+
+	response := &pb.NewUser{
+		User: mapUserToPB(newUser),
+	}
+
 	return response, nil
 }
 
@@ -46,7 +64,7 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 		Users: []*pb.User{},
 	}
 	for _, user := range users {
-		current := mapUser(user)
+		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil
@@ -90,7 +108,7 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	}
 	//ctx = tracer.ContextWithSpan(context.Background(), span)
 	for _, user := range users {
-		current := mapUser(user)
+		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil

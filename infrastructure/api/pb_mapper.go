@@ -2,11 +2,13 @@ package api
 
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func mapUser(user *domain.RegisteredUser) *pb.User {
+func mapUserToPB(user *domain.RegisteredUser) *pb.User {
 	userPb := &pb.User{
 		Id:          user.Id.Hex(),
 		FirstName:   user.FirstName,
@@ -61,11 +63,90 @@ func mapUser(user *domain.RegisteredUser) *pb.User {
 	return userPb
 }
 
+func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
+	id, err := primitive.ObjectIDFromHex((*userPb).Id)
+	if err != nil {
+		return &domain.RegisteredUser{}
+	}
+
+	user := &domain.RegisteredUser{
+		Id:          id,
+		FirstName:   (*userPb).FirstName,
+		LastName:    (*userPb).LastName,
+		Email:       (*userPb).Email,
+		PhoneNumber: (*userPb).PhoneNumber,
+		Gender:      enum.Gender((*userPb).Gender),
+		DateOfBirth: timestamppb.Timestamp.AsTime(*((*userPb).DateOfBirth)),
+		Biography:   (*userPb).Biography,
+		IsPrivate:   (*userPb).IsPrivate,
+	}
+
+	for _, experience := range (*userPb).Experiences {
+		id, err := primitive.ObjectIDFromHex(experience.Id)
+		if err != nil {
+			continue
+		}
+
+		user.Experiences = append(user.Experiences, domain.Experience{
+			Id:                 id,
+			Title:              experience.Title,
+			EmploymentType:     enum.EmploymentType(experience.EmploymentType),
+			CompanyName:        experience.CompanyName,
+			Location:           experience.Location,
+			IsCurrentlyWorking: experience.IsCurrentlyWorking,
+			StartDate:          timestamppb.Timestamp.AsTime(*experience.StartDate),
+			EndDate:            timestamppb.Timestamp.AsTime(*experience.EndDate),
+			Industry:           experience.Industry,
+			Description:        experience.Description,
+		})
+	}
+
+	for _, education := range (*userPb).Educations {
+		id, err := primitive.ObjectIDFromHex(education.Id)
+		if err != nil {
+			continue
+		}
+
+		user.Educations = append(user.Educations, domain.Education{
+			Id:           id,
+			School:       education.School,
+			Degree:       enum.Degree(education.Degree),
+			FieldOfStudy: education.FieldOfStudy,
+			StartDate:    timestamppb.Timestamp.AsTime(*education.StartDate),
+			EndDate:      timestamppb.Timestamp.AsTime(*education.EndDate),
+			Description:  education.Description,
+		})
+	}
+
+	for _, skill := range (*userPb).Skills {
+		user.Skills = append(user.Skills, skill)
+	}
+
+	for _, interest := range (*userPb).Interests {
+		interestId, err := primitive.ObjectIDFromHex(interest)
+		if err != nil {
+			continue
+		}
+
+		user.Interests = append(user.Interests, interestId)
+	}
+
+	for _, connection := range (*userPb).Connections {
+		connectionId, err := primitive.ObjectIDFromHex(connection)
+		if err != nil {
+			continue
+		}
+		user.Connections = append(user.Connections, connectionId)
+	}
+
+	return user
+}
+
 func mapConnectionRequest(request *domain.ConnectionRequest) *pb.ConnectionRequest {
 	connectionPb := &pb.ConnectionRequest{
 		Id:          request.Id.Hex(),
-		From:        mapUser(&request.From),
-		To:          mapUser(&request.To),
+		From:        mapUserToPB(&request.From),
+		To:          mapUserToPB(&request.To),
 		RequestTime: timestamppb.New(request.RequestTime),
 	}
 	return connectionPb

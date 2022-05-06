@@ -9,4 +9,5 @@ type UserStore interface {
 	DeleteAll()
 	GetBasicInfo() ([]*RegisteredUser, error)
 	Update(user *RegisteredUser) error
+	GetByUsername(username string) (*RegisteredUser, error)
 }
