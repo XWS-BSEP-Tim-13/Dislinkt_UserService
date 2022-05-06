@@ -7,4 +7,5 @@ type ConnectionRequestStore interface {
 	GetAll() ([]*ConnectionRequest, error)
 	Insert(company *ConnectionRequest) error
 	DeleteAll()
+	GetRequestsForUser(id primitive.ObjectID) ([]*ConnectionRequest, error)
 }

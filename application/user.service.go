@@ -1,6 +1,7 @@
 package application
 
 import (
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
@@ -25,11 +26,12 @@ func (service *UserService) Get(id primitive.ObjectID) (*domain.RegisteredUser, 
 
 func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) error {
 	toUser, err := service.store.Get(idTo)
+	fromUser, _ := service.store.Get(idFrom)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("In service trace: \n")
 	if toUser.IsPrivate {
-		fromUser, _ := service.store.Get(idFrom)
 		var request = domain.ConnectionRequest{
 			From:        *fromUser,
 			To:          *toUser,
@@ -38,8 +40,14 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 		service.connectionStore.Insert(&request)
 	} else {
 		toUser.Connections = append(toUser.Connections, idFrom)
+		service.store.Update(toUser)
 	}
+	fmt.Printf("Saved to db: \n")
 	return nil
+}
+
+func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
+	return service.connectionStore.GetRequestsForUser(id)
 }
 
 func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {

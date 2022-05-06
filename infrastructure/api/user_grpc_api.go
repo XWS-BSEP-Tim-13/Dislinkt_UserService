@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -51,14 +52,32 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 	return response, nil
 }
 
+func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.GetRequest) (*pb.UserRequests, error) {
+	id, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	requests, err := handler.service.GetRequestsForUser(id)
+	response := &pb.UserRequests{
+		Requests: []*pb.ConnectionRequest{},
+	}
+	for _, request := range requests {
+		current := mapConnectionRequest(request)
+		response.Requests = append(response.Requests, current)
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
+	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
 	if err != nil || err1 != nil {
 		return nil, err
 	}
 	handler.service.RequestConnection(idFrom, idTo)
-	return nil, nil
+	fmt.Printf("Returning to func")
+	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
@@ -69,6 +88,7 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	response := &pb.GetAllResponse{
 		Users: []*pb.User{},
 	}
+	//ctx = tracer.ContextWithSpan(context.Background(), span)
 	for _, user := range users {
 		current := mapUser(user)
 		response.Users = append(response.Users, current)

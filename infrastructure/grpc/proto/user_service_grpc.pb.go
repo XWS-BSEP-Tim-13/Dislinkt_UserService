@@ -26,6 +26,7 @@ type UserServiceClient interface {
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	FindByFilter(ctx context.Context, in *UserFilter, opts ...grpc.CallOption) (*GetAllResponse, error)
 	RequestConnection(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error)
 }
 
 type userServiceClient struct {
@@ -72,6 +73,15 @@ func (c *userServiceClient) RequestConnection(ctx context.Context, in *Connectio
 	return out, nil
 }
 
+func (c *userServiceClient) GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error) {
+	out := new(UserRequests)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetRequestsForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type UserServiceServer interface {
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error)
 	RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error)
+	GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedUserServiceServer) FindByFilter(context.Context, *UserFilter)
 }
 func (UnimplementedUserServiceServer) RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestConnection not implemented")
+}
+func (UnimplementedUserServiceServer) GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRequestsForUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -184,6 +198,24 @@ func _UserService_RequestConnection_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetRequestsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetRequestsForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetRequestsForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetRequestsForUser(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RequestConnection",
 			Handler:    _UserService_RequestConnection_Handler,
+		},
+		{
+			MethodName: "GetRequestsForUser",
+			Handler:    _UserService_GetRequestsForUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

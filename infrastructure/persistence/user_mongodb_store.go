@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -56,6 +57,18 @@ func (store *UserMongoDBStore) filter(filter interface{}) ([]*domain.RegisteredU
 		return nil, err
 	}
 	return decode(cursor)
+}
+
+func (store *UserMongoDBStore) Update(user *domain.RegisteredUser) (err error) {
+	fmt.Printf("Updating user %s %s\n", user.FirstName, user.Connections)
+	filter := bson.M{"_id": user.Id}
+	replacementObj := user
+	_, err = store.users.ReplaceOne(context.TODO(), filter, replacementObj)
+	fmt.Printf("Updated \n")
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.RegisteredUser, err error) {

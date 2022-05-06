@@ -16,7 +16,7 @@ var users = []*domain.RegisteredUser{
 		Gender:      0,
 		DateOfBirth: time.Time{},
 		Biography:   "biography sample",
-		IsPrivate:   true,
+		IsPrivate:   false,
 		Experiences: []domain.Experience{},
 		Educations:  []domain.Education{},
 		Skills:      []string{"s1", "s2"},
@@ -24,7 +24,7 @@ var users = []*domain.RegisteredUser{
 		Connections: []primitive.ObjectID{},
 	},
 	{
-		Id:          getObjectId("f880e6be-cd34-11ec-9d64-0242ac120002"),
+		Id:          getObjectId("723b0cc3a34d25d8567f9f83"),
 		FirstName:   "Stefan",
 		LastName:    "Ljubovic",
 		Email:       "ljubovicstefan@gmail.com",

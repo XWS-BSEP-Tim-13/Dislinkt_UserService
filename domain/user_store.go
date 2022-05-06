@@ -8,4 +8,5 @@ type UserStore interface {
 	Insert(company *RegisteredUser) error
 	DeleteAll()
 	GetBasicInfo() ([]*RegisteredUser, error)
+	Update(user *RegisteredUser) error
 }

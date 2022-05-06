@@ -57,6 +57,16 @@ func mapUser(user *domain.RegisteredUser) *pb.User {
 	for _, connection := range user.Connections {
 		userPb.Connections = append(userPb.Connections, connection.Hex())
 	}
-	
+
 	return userPb
+}
+
+func mapConnectionRequest(request *domain.ConnectionRequest) *pb.ConnectionRequest {
+	connectionPb := &pb.ConnectionRequest{
+		Id:          request.Id.Hex(),
+		From:        mapUser(&request.From),
+		To:          mapUser(&request.To),
+		RequestTime: timestamppb.New(request.RequestTime),
+	}
+	return connectionPb
 }

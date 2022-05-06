@@ -8,11 +8,15 @@ import (
 	user "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/persistence"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/startup/config"
+	otgo "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 )
+
+var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
 
 type Server struct {
 	config *config.Config
