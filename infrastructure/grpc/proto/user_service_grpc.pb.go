@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	CreateUser(ctx context.Context, in *NewUser, opts ...grpc.CallOption) (*NewUser, error)
 	FindByFilter(ctx context.Context, in *UserFilter, opts ...grpc.CallOption) (*GetAllResponse, error)
 	RequestConnection(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error)
@@ -50,6 +51,15 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grp
 func (c *userServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *NewUser, opts ...grpc.CallOption) (*NewUser, error) {
+	out := new(NewUser)
+	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +108,7 @@ func (c *userServiceClient) UpdatePersonalInfo(ctx context.Context, in *UserInfo
 type UserServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	CreateUser(context.Context, *NewUser) (*NewUser, error)
 	FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error)
 	RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error)
 	GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error)
@@ -114,6 +125,9 @@ func (UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetRes
 }
 func (UnimplementedUserServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *NewUser) (*NewUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServiceServer) FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindByFilter not implemented")
@@ -172,6 +186,24 @@ func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAll(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*NewUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -262,6 +294,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _UserService_GetAll_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
 		},
 		{
 			MethodName: "FindByFilter",

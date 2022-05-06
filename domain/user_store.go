@@ -10,4 +10,5 @@ type UserStore interface {
 	GetBasicInfo() ([]*RegisteredUser, error)
 	Update(user *RegisteredUser) error
 	UpdatePersonalInfo(user *RegisteredUser) (primitive.ObjectID, error)
+	GetByUsername(username string) (*RegisteredUser, error)
 }
