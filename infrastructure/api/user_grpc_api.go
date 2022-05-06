@@ -51,11 +51,15 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 	return response, nil
 }
 
-//
-//func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.) (*pb.GetAllRequest, error) {
-//	idFrom := request.From
-//	idTo := request.To
-//}
+func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
+	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
+	if err != nil || err1 != nil {
+		return nil, err
+	}
+	handler.service.RequestConnection(idFrom, idTo)
+	return nil, nil
+}
 
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()

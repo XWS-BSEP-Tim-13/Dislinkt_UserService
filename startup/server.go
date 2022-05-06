@@ -27,8 +27,8 @@ func NewServer(config *config.Config) *Server {
 func (server *Server) Start() {
 	mongoClient := server.initMongoClient()
 	userStore := server.initUserStore(mongoClient)
-
-	userService := server.initUserService(userStore)
+	connectionsStore := server.initConnectionStore(mongoClient)
+	userService := server.initUserService(userStore, connectionsStore)
 
 	userHandler := server.initUserHandler(userService)
 
@@ -43,6 +43,19 @@ func (server *Server) initMongoClient() *mongo.Client {
 	return client
 }
 
+func (server *Server) initConnectionStore(client *mongo.Client) domain.ConnectionRequestStore {
+	store := persistence.NewConnectionsMongoDBStore(client)
+	store.DeleteAll()
+
+	for _, connection := range connections {
+		err := store.Insert(connection)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return store
+}
+
 func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	store := persistence.NewUserMongoDBStore(client)
 	store.DeleteAll()
@@ -55,8 +68,8 @@ func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	return store
 }
 
-func (server *Server) initUserService(store domain.UserStore) *application.UserService {
-	return application.NewUserService(store)
+func (server *Server) initUserService(store domain.UserStore, conStore domain.ConnectionRequestStore) *application.UserService {
+	return application.NewUserService(store, conStore)
 }
 
 func (server *Server) initUserHandler(service *application.UserService) *api.UserHandler {

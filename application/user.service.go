@@ -4,20 +4,42 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
+	"time"
 )
 
 type UserService struct {
-	store domain.UserStore
+	store           domain.UserStore
+	connectionStore domain.ConnectionRequestStore
 }
 
-func NewUserService(store domain.UserStore) *UserService {
+func NewUserService(store domain.UserStore, connectionStore domain.ConnectionRequestStore) *UserService {
 	return &UserService{
-		store: store,
+		store:           store,
+		connectionStore: connectionStore,
 	}
 }
 
 func (service *UserService) Get(id primitive.ObjectID) (*domain.RegisteredUser, error) {
 	return service.store.Get(id)
+}
+
+func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) error {
+	toUser, err := service.store.Get(idTo)
+	if err != nil {
+		return err
+	}
+	if toUser.IsPrivate {
+		fromUser, _ := service.store.Get(idFrom)
+		var request = domain.ConnectionRequest{
+			From:        *fromUser,
+			To:          *toUser,
+			RequestTime: time.Now(),
+		}
+		service.connectionStore.Insert(&request)
+	} else {
+		toUser.Connections = append(toUser.Connections, idFrom)
+	}
+	return nil
 }
 
 func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {

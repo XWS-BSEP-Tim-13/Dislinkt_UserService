@@ -65,7 +65,7 @@ func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.Regis
 }
 
 func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) {
-	projection := bson.D{{"first_name", 0}, {"last_name", 0}}
+	projection := bson.D{{"first_name", 1}, {"last_name", 1}}
 	opts := options.Find().SetProjection(projection)
 	cursor, err := store.users.Find(context.TODO(), bson.D{}, opts)
 	defer cursor.Close(context.TODO())

@@ -23,7 +23,25 @@ var users = []*domain.RegisteredUser{
 		Interests:   []primitive.ObjectID{},
 		Connections: []primitive.ObjectID{},
 	},
+	{
+		Id:          getObjectId("f880e6be-cd34-11ec-9d64-0242ac120002"),
+		FirstName:   "Stefan",
+		LastName:    "Ljubovic",
+		Email:       "ljubovicstefan@gmail.com",
+		PhoneNumber: "0654324995",
+		Gender:      0,
+		DateOfBirth: time.Time{},
+		Biography:   "biography sample",
+		IsPrivate:   true,
+		Experiences: []domain.Experience{},
+		Educations:  []domain.Education{},
+		Skills:      []string{"s1", "s2"},
+		Interests:   []primitive.ObjectID{},
+		Connections: []primitive.ObjectID{},
+	},
 }
+
+var connections = []*domain.ConnectionRequest{}
 
 func getObjectId(id string) primitive.ObjectID {
 	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {
