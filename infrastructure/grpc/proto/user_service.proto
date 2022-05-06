@@ -39,7 +39,8 @@ service UserService{
 
   rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
     option(google.api.http) = {
-      put: "/user/{id}"
+      put: "/user/{id}",
+      body: "*"
     };
   }
 }
