@@ -12,4 +12,5 @@ type UserStore interface {
 	UpdatePersonalInfo(user *RegisteredUser) (primitive.ObjectID, error)
 	GetByUsername(username string) (*RegisteredUser, error)
 	AddExperience(experience *Experience, userId primitive.ObjectID) error
+	AddEducation(education *Education, userId primitive.ObjectID) error
 }

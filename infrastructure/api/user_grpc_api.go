@@ -143,3 +143,16 @@ func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.Exper
 
 	return response, nil
 }
+
+func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.EducationUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.EducationUpdate.UserId
+	education := mapEducation(request.EducationUpdate.Education)
+	expId, _ := primitive.ObjectIDFromHex(request.EducationUpdate.UserId)
+
+	if err := handler.service.AddEducation(education, expId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

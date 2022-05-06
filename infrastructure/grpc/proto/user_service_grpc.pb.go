@@ -30,6 +30,7 @@ type UserServiceClient interface {
 	GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error)
 	UpdatePersonalInfo(ctx context.Context, in *UserInfoUpdate, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	AddExperience(ctx context.Context, in *ExperienceUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
+	AddEducation(ctx context.Context, in *EducationUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 }
 
 type userServiceClient struct {
@@ -112,6 +113,15 @@ func (c *userServiceClient) AddExperience(ctx context.Context, in *ExperienceUpd
 	return out, nil
 }
 
+func (c *userServiceClient) AddEducation(ctx context.Context, in *EducationUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/AddEducation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -124,6 +134,7 @@ type UserServiceServer interface {
 	GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error)
 	UpdatePersonalInfo(context.Context, *UserInfoUpdate) (*UserInfoUpdateResponse, error)
 	AddExperience(context.Context, *ExperienceUpdateRequest) (*UserInfoUpdateResponse, error)
+	AddEducation(context.Context, *EducationUpdateRequest) (*UserInfoUpdateResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -154,6 +165,9 @@ func (UnimplementedUserServiceServer) UpdatePersonalInfo(context.Context, *UserI
 }
 func (UnimplementedUserServiceServer) AddExperience(context.Context, *ExperienceUpdateRequest) (*UserInfoUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddExperience not implemented")
+}
+func (UnimplementedUserServiceServer) AddEducation(context.Context, *EducationUpdateRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddEducation not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -312,6 +326,24 @@ func _UserService_AddExperience_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_AddEducation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EducationUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddEducation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/AddEducation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddEducation(ctx, req.(*EducationUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -350,6 +382,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddExperience",
 			Handler:    _UserService_AddExperience_Handler,
+		},
+		{
+			MethodName: "AddEducation",
+			Handler:    _UserService_AddEducation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
