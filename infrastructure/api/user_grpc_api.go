@@ -244,3 +244,15 @@ func (handler *UserHandler) DeleteExperience(ctx context.Context, request *pb.De
 
 	return response, nil
 }
+
+func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.DeleteEducationRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.DeleteEducation.EducationId
+	userId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.UserId)
+	educationId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.EducationId)
+	if err := handler.service.DeleteEducation(educationId, userId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

@@ -174,3 +174,7 @@ func (service *UserService) AddInterest(companyId primitive.ObjectID, userId pri
 func (service *UserService) DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error {
 	return service.store.DeleteExperience(experienceId, userId)
 }
+
+func (service *UserService) DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error {
+	return service.store.DeleteEducation(educationId, userId)
+}

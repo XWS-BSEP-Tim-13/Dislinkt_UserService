@@ -104,8 +104,15 @@ service UserService{
 
   rpc DeleteExperience(DeleteExperienceRequest) returns(UserInfoUpdateResponse) {
     option(google.api.http) = {
-      put: "/user/experience/{deleteExperience.experienceId}",
+      put: "/user/experience/delete",
       body: "deleteExperience"
+    };
+  }
+
+  rpc DeleteEducation(DeleteEducationRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education/delete",
+      body: "deleteEducation"
     };
   }
 }
@@ -290,4 +297,13 @@ message DeleteExperience {
 
 message DeleteExperienceRequest {
   DeleteExperience deleteExperience = 1;
+}
+
+message DeleteEducation {
+  string educationId = 1;
+  string userId = 2;
+}
+
+message DeleteEducationRequest {
+  DeleteEducation deleteEducation = 1;
 }

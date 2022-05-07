@@ -16,4 +16,5 @@ type UserStore interface {
 	AddSkill(skill string, userId primitive.ObjectID) error
 	AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error
 	DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error
+	DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error
 }

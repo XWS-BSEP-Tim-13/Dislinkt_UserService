@@ -38,6 +38,7 @@ type UserServiceClient interface {
 	AddSkill(ctx context.Context, in *SkillsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	AddInterest(ctx context.Context, in *InterestsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	DeleteExperience(ctx context.Context, in *DeleteExperienceRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
+	DeleteEducation(ctx context.Context, in *DeleteEducationRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 }
 
 type userServiceClient struct {
@@ -192,6 +193,15 @@ func (c *userServiceClient) DeleteExperience(ctx context.Context, in *DeleteExpe
 	return out, nil
 }
 
+func (c *userServiceClient) DeleteEducation(ctx context.Context, in *DeleteEducationRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/DeleteEducation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -212,6 +222,7 @@ type UserServiceServer interface {
 	AddSkill(context.Context, *SkillsUpdateRequest) (*UserInfoUpdateResponse, error)
 	AddInterest(context.Context, *InterestsUpdateRequest) (*UserInfoUpdateResponse, error)
 	DeleteExperience(context.Context, *DeleteExperienceRequest) (*UserInfoUpdateResponse, error)
+	DeleteEducation(context.Context, *DeleteEducationRequest) (*UserInfoUpdateResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -266,6 +277,9 @@ func (UnimplementedUserServiceServer) AddInterest(context.Context, *InterestsUpd
 }
 func (UnimplementedUserServiceServer) DeleteExperience(context.Context, *DeleteExperienceRequest) (*UserInfoUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExperience not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteEducation(context.Context, *DeleteEducationRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteEducation not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -568,6 +582,24 @@ func _UserService_DeleteExperience_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_DeleteEducation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteEducationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteEducation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/DeleteEducation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteEducation(ctx, req.(*DeleteEducationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -638,6 +670,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteExperience",
 			Handler:    _UserService_DeleteExperience_Handler,
+		},
+		{
+			MethodName: "DeleteEducation",
+			Handler:    _UserService_DeleteEducation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

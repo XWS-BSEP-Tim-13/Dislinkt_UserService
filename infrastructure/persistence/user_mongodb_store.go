@@ -209,6 +209,23 @@ func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID,
 	return err
 }
 
+func (store *UserMongoDBStore) DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	educations, errDel := util.DeleteEducation(user.Educations, educationId)
+	if errDel != nil {
+		return errDel
+	}
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"educations", educations}}},
+		},
+	)
+
+	return err
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser

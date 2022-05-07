@@ -16,3 +16,14 @@ func DeleteExperience(experiences []domain.Experience, exp primitive.ObjectID) (
 	err := errors.New("experience not in slice")
 	return nil, err
 }
+
+func DeleteEducation(educations []domain.Education, edu primitive.ObjectID) ([]domain.Education, error) {
+	for i, e := range educations {
+		if e.Id == edu {
+			withoutElem := append(educations[:i], educations[i+1:]...)
+			return withoutElem, nil
+		}
+	}
+	err := errors.New("education not in slice")
+	return nil, err
+}
