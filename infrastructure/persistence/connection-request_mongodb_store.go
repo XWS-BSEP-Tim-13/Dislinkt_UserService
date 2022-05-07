@@ -17,6 +17,11 @@ type ConnectionsMongoDBStore struct {
 	connections *mongo.Collection
 }
 
+func (store ConnectionsMongoDBStore) Delete(id primitive.ObjectID) {
+	filter := bson.M{"_id": id}
+	store.connections.DeleteOne(context.TODO(), filter)
+}
+
 func (store ConnectionsMongoDBStore) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
 	filter := bson.D{{"to._id", id}}
 	return store.filter(filter)

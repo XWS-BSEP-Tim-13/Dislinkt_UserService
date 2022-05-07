@@ -53,7 +53,11 @@ func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) er
 	}
 	connection.To.Connections = append(connection.To.Connections, connection.From.Id)
 	fmt.Printf("Saved connection %s \n", connection.To.Connections)
-	service.store.Update(&connection.To)
+	err1 := service.store.Update(&connection.To)
+	if err != nil {
+		return err1
+	}
+	service.connectionStore.Delete(connectionId)
 	return nil
 }
 
