@@ -36,6 +36,11 @@ func (store *UserMongoDBStore) GetAll() ([]*domain.RegisteredUser, error) {
 	return store.filter(filter)
 }
 
+func (store *UserMongoDBStore) GetByUsername(username string) (*domain.RegisteredUser, error) {
+	filter := bson.M{"username": username}
+	return store.filterOne(filter)
+}
+
 func (store *UserMongoDBStore) Insert(user *domain.RegisteredUser) error {
 	result, err := store.users.InsertOne(context.TODO(), user)
 	if err != nil {
@@ -98,6 +103,54 @@ func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) 
 //	}
 //	return store.filter(filter)
 //}
+
+func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
+	result, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"first_name", user.FirstName},
+				{"last_name", user.LastName},
+				{"gender", user.Gender},
+				{"phone_number", user.PhoneNumber},
+				{"date_of_birth", user.DateOfBirth},
+				{"biography", user.Biography},
+				{"email", user.Email},
+			}},
+		},
+	)
+	upsertedId := fmt.Sprint(result.UpsertedID)
+	objectId, _ := primitive.ObjectIDFromHex(upsertedId)
+	return objectId, err
+}
+
+func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	experiences := append(user.Experiences, *experience)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"experiences", experiences}}},
+		},
+	)
+
+	return err
+}
+
+func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	educations := append(user.Educations, *education)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"educations", educations}}},
+		},
+	)
+
+	return err
+}
 
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {

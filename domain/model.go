@@ -44,6 +44,7 @@ type RegisteredUser struct {
 	Skills      []string             `bson:"skills"`
 	Interests   []primitive.ObjectID `bson:"interests"`
 	Connections []primitive.ObjectID `bson:"connections"`
+	Username    string               `bson:"username"`
 }
 
 type ConnectionRequest struct {
@@ -51,4 +52,9 @@ type ConnectionRequest struct {
 	From        RegisteredUser     `bson:"from"`
 	To          RegisteredUser     `bson:"to"`
 	RequestTime time.Time          `bson:"request_time"`
+}
+
+func NewRegisteredUser(id primitive.ObjectID, fname string, lname string, gender enum.Gender, dob time.Time, email string,
+	phoneNumber string, biography string) {
+
 }

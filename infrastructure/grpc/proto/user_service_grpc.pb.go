@@ -24,10 +24,14 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	CreateUser(ctx context.Context, in *NewUser, opts ...grpc.CallOption) (*NewUser, error)
 	FindByFilter(ctx context.Context, in *UserFilter, opts ...grpc.CallOption) (*GetAllResponse, error)
 	RequestConnection(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error)
 	AcceptConnectionRequest(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	UpdatePersonalInfo(ctx context.Context, in *UserInfoUpdate, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
+	AddExperience(ctx context.Context, in *ExperienceUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
+	AddEducation(ctx context.Context, in *EducationUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 }
 
 type userServiceClient struct {
@@ -50,6 +54,15 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grp
 func (c *userServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *NewUser, opts ...grpc.CallOption) (*NewUser, error) {
+	out := new(NewUser)
+	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,16 +105,47 @@ func (c *userServiceClient) AcceptConnectionRequest(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *userServiceClient) UpdatePersonalInfo(ctx context.Context, in *UserInfoUpdate, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdatePersonalInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddExperience(ctx context.Context, in *ExperienceUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/AddExperience", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddEducation(ctx context.Context, in *EducationUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/AddEducation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	CreateUser(context.Context, *NewUser) (*NewUser, error)
 	FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error)
 	RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error)
 	GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error)
 	AcceptConnectionRequest(context.Context, *GetRequest) (*ConnectionResponse, error)
+	UpdatePersonalInfo(context.Context, *UserInfoUpdate) (*UserInfoUpdateResponse, error)
+	AddExperience(context.Context, *ExperienceUpdateRequest) (*UserInfoUpdateResponse, error)
+	AddEducation(context.Context, *EducationUpdateRequest) (*UserInfoUpdateResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -115,6 +159,9 @@ func (UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetRes
 func (UnimplementedUserServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *NewUser) (*NewUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
 func (UnimplementedUserServiceServer) FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindByFilter not implemented")
 }
@@ -126,6 +173,15 @@ func (UnimplementedUserServiceServer) GetRequestsForUser(context.Context, *GetRe
 }
 func (UnimplementedUserServiceServer) AcceptConnectionRequest(context.Context, *GetRequest) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptConnectionRequest not implemented")
+}
+func (UnimplementedUserServiceServer) UpdatePersonalInfo(context.Context, *UserInfoUpdate) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePersonalInfo not implemented")
+}
+func (UnimplementedUserServiceServer) AddExperience(context.Context, *ExperienceUpdateRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddExperience not implemented")
+}
+func (UnimplementedUserServiceServer) AddEducation(context.Context, *EducationUpdateRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddEducation not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -172,6 +228,24 @@ func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAll(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*NewUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,6 +322,60 @@ func _UserService_AcceptConnectionRequest_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdatePersonalInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserInfoUpdate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdatePersonalInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdatePersonalInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdatePersonalInfo(ctx, req.(*UserInfoUpdate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddExperience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExperienceUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddExperience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/AddExperience",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddExperience(ctx, req.(*ExperienceUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddEducation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EducationUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddEducation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/AddEducation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddEducation(ctx, req.(*EducationUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -264,6 +392,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetAll_Handler,
 		},
 		{
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
+		},
+		{
 			MethodName: "FindByFilter",
 			Handler:    _UserService_FindByFilter_Handler,
 		},
@@ -278,6 +410,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptConnectionRequest",
 			Handler:    _UserService_AcceptConnectionRequest_Handler,
+		},
+		{
+			MethodName: "UpdatePersonalInfo",
+			Handler:    _UserService_UpdatePersonalInfo_Handler,
+		},
+		{
+			MethodName: "AddExperience",
+			Handler:    _UserService_AddExperience_Handler,
+		},
+		{
+			MethodName: "AddEducation",
+			Handler:    _UserService_AddEducation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

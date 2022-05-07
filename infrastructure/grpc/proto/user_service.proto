@@ -13,10 +13,14 @@ service UserService{
       get: "/user/{id}"
     };
   }
+
   rpc GetAll(GetAllRequest) returns(GetAllResponse) {
     option (google.api.http) = {
       get: "/user"
     };
+  }
+
+  rpc CreateUser(NewUser) returns(NewUser) {
   }
 
   rpc FindByFilter(UserFilter) returns(GetAllResponse){
@@ -24,6 +28,7 @@ service UserService{
       get: "/user/filter/{filter}"
     };
   }
+
   rpc RequestConnection(ConnectionBody) returns(ConnectionResponse){
     option (google.api.http) = {
       post: "/connection-request"
@@ -43,6 +48,26 @@ service UserService{
     };
   }
 
+  rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/{userInfo.id}",
+      body: "userInfo"
+    };
+  }
+
+  rpc AddExperience(ExperienceUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience",
+      body: "experienceUpdate"
+    };
+  }
+
+  rpc AddEducation(EducationUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education",
+      body: "educationUpdate"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -78,6 +103,10 @@ message GetAllResponse {
   repeated User users = 1;
 }
 
+message NewUser {
+  User user = 1;
+}
+
 message User {
   string id = 1;
   string firstName = 2;
@@ -101,7 +130,7 @@ message User {
   repeated string interests = 13;
   repeated string connections = 14;
 
-
+  string username = 15;
 }
 
 message Experience {
@@ -147,4 +176,47 @@ message ConnectionRequest {
   User from = 2;
   User to = 3;
   google.protobuf.Timestamp requestTime = 4;
+}
+
+message UserInfo {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string phoneNumber = 4;
+  google.protobuf.Timestamp dateOfBirth = 5;
+  string biography = 6;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 7;
+  string email = 8;
+}
+
+message UserInfoUpdate {
+  UserInfo userInfo = 1;
+}
+
+message UserInfoUpdateResponse{
+  string id = 1;
+}
+
+message NewExperience {
+  string userId = 1;
+  Experience experience = 2;
+}
+
+message ExperienceUpdateRequest {
+  NewExperience experienceUpdate = 1;
+}
+
+message NewEducation {
+  string userId = 1;
+  Education education = 2;
+}
+
+message EducationUpdateRequest {
+  NewEducation educationUpdate = 1;
 }
