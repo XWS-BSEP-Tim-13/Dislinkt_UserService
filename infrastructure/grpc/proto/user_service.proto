@@ -239,7 +239,11 @@ message EducationUpdateRequest {
   NewEducation educationUpdate = 1;
 }
 
-message SkillsUpdateRequest {
+message NewSkill {
   string skill = 1;
   string userId = 2;
+}
+
+message SkillsUpdateRequest {
+  NewSkill skill = 1;
 }
