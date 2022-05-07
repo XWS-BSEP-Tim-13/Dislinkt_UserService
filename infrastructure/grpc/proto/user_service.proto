@@ -36,6 +36,13 @@ service UserService{
     };
   }
 
+  rpc CheckIfUserCanReadPosts(ConnectionBody) returns(ReadPostsResponse){
+    option (google.api.http) = {
+      post: "/user/check-read-posts"
+      body: "connection"
+    };
+  }
+
   rpc GetRequestsForUser(GetRequest) returns(UserRequests){
     option(google.api.http) = {
       get: "/connection-request/by-user/{id}"
@@ -70,6 +77,10 @@ service UserService{
   }
 }
 message ConnectionResponse{}
+
+message ReadPostsResponse{
+  bool isReadable = 1;
+}
 
 message ConnectionBody{
   Connection connection = 1;

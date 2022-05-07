@@ -47,6 +47,22 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 	return nil
 }
 
+func (service *UserService) CheckIfUserCanReadPosts(idFrom, idTo primitive.ObjectID) (bool, error) {
+	toUser, err := service.store.Get(idTo)
+	if err != nil {
+		return false, err
+	}
+	if !toUser.IsPrivate {
+		return true, nil
+	}
+	for _, conId := range toUser.Connections {
+		if conId == idFrom {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) error {
 	connection, err := service.connectionStore.Get(connectionId)
 	if err != nil {

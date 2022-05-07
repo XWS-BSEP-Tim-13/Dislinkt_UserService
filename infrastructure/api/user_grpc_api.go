@@ -93,6 +93,24 @@ func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.C
 	return new(pb.ConnectionResponse), nil
 }
 
+func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request *pb.ConnectionBody) (*pb.ReadPostsResponse, error) {
+	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
+	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
+	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
+	if err != nil || err1 != nil {
+		return nil, err
+	}
+	isReadable, err1 := handler.service.CheckIfUserCanReadPosts(idFrom, idTo)
+
+	if err1 != nil {
+		return nil, err
+	}
+	response := &pb.ReadPostsResponse{
+		IsReadable: isReadable,
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()
 	if err != nil {
