@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -154,6 +155,11 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 
 func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
 	user, _ := store.Get(userId)
+	skillExists := contains(user.Skills, skill)
+	if skillExists {
+		err := errors.New("skill already exists")
+		return err
+	}
 	skills := append(user.Skills, skill)
 	_, err := store.users.UpdateOne(
 		context.TODO(),
@@ -177,4 +183,13 @@ func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	}
 	err = cursor.Err()
 	return
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

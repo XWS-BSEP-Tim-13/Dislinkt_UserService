@@ -169,10 +169,10 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 
 func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
 	response := new(pb.UserInfoUpdateResponse)
-	response.Id = request.Skill
-	userId, _ := primitive.ObjectIDFromHex(request.UserId)
+	response.Id = request.Skill.Skill
+	userId, _ := primitive.ObjectIDFromHex(request.Skill.UserId)
 
-	if err := handler.service.AddSkill(request.Skill, userId); err != nil {
+	if err := handler.service.AddSkill(request.Skill.Skill, userId); err != nil {
 		return nil, err
 	}
 
