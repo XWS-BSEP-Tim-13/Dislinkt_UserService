@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	util "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -155,7 +156,7 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 
 func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
 	user, _ := store.Get(userId)
-	skillExists := contains(user.Skills, skill)
+	skillExists := util.ContainsStr(user.Skills, skill)
 	if skillExists {
 		err := errors.New("skill already exists")
 		return err
@@ -166,6 +167,25 @@ func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID)
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"skills", skills}}},
+		},
+	)
+
+	return err
+}
+
+func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	interestExists := util.ContainsId(user.Interests, companyId)
+	if interestExists {
+		err := errors.New("interest already added")
+		return err
+	}
+	interests := append(user.Interests, companyId)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"interests", interests}}},
 		},
 	)
 
@@ -183,13 +203,4 @@ func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	}
 	err = cursor.Err()
 	return
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
