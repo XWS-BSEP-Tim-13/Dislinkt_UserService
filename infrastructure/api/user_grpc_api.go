@@ -178,3 +178,15 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 
 	return response, nil
 }
+
+func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.InterestsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.Interest.CompanyId
+	userId, _ := primitive.ObjectIDFromHex(request.Interest.UserId)
+	companyId, _ := primitive.ObjectIDFromHex(request.Interest.CompanyId)
+	if err := handler.service.AddInterest(companyId, userId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

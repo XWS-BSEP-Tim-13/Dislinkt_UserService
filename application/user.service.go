@@ -120,3 +120,7 @@ func (service *UserService) AddEducation(education *domain.Education, userId pri
 func (service *UserService) AddSkill(skill string, userId primitive.ObjectID) error {
 	return service.store.AddSkill(skill, userId)
 }
+
+func (service *UserService) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	return service.store.AddInterest(companyId, userId)
+}
