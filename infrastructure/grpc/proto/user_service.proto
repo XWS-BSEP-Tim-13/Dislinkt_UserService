@@ -37,6 +37,12 @@ service UserService{
     };
   }
 
+  rpc AcceptConnectionRequest(GetRequest) returns(ConnectionResponse){
+    option(google.api.http) = {
+      post: "/connection-request/accept/{id}"
+    };
+  }
+
 }
 message ConnectionResponse{}
 

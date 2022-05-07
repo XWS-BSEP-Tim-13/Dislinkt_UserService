@@ -62,10 +62,20 @@ func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.
 		Requests: []*pb.ConnectionRequest{},
 	}
 	for _, request := range requests {
+		fmt.Printf("Request: %s, id to: %s\n", request.To.FirstName, request.To.LastName)
 		current := mapConnectionRequest(request)
 		response.Requests = append(response.Requests, current)
 	}
 	return response, nil
+}
+
+func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	connectionId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	handler.service.AcceptConnection(connectionId)
+	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {

@@ -46,8 +46,21 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 	return nil
 }
 
+func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) error {
+	connection, err := service.connectionStore.Get(connectionId)
+	if err != nil {
+		return err
+	}
+	connection.To.Connections = append(connection.To.Connections, connection.From.Id)
+	fmt.Printf("Saved connection %s \n", connection.To.Connections)
+	service.store.Update(&connection.To)
+	return nil
+}
+
 func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
-	return service.connectionStore.GetRequestsForUser(id)
+	resp, err := service.connectionStore.GetRequestsForUser(id)
+	fmt.Printf("Response %d\n", len(resp))
+	return resp, err
 }
 
 func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {
