@@ -173,6 +173,36 @@ func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID)
 	return err
 }
 
+func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.ObjectID) error {
+	user, err := store.Get(userId)
+	if err != nil {
+		return errors.New("no such user")
+	}
+
+	skillExists := util.ContainsStr(user.Skills, removeSkill)
+	if !skillExists {
+		return errors.New("skill doesn't exists")
+	}
+
+	var skills []string
+	for idx, skill := range user.Skills {
+		if skill == removeSkill {
+			skills = util.RemoveElement(user.Skills, idx)
+			break
+		}
+	}
+
+	_, err = store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"skills", skills}}},
+		},
+	)
+
+	return err
+}
+
 func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
 	user, _ := store.Get(userId)
 	interestExists := util.ContainsId(user.Interests, companyId)
@@ -182,6 +212,36 @@ func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId 
 	}
 	interests := append(user.Interests, companyId)
 	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"interests", interests}}},
+		},
+	)
+
+	return err
+}
+
+func (store *UserMongoDBStore) RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	user, err := store.Get(userId)
+	if err != nil {
+		return errors.New("no such user")
+	}
+
+	interestExists := util.ContainsId(user.Interests, companyId)
+	if !interestExists {
+		return errors.New("interest doesn't exists")
+	}
+
+	var interests []primitive.ObjectID
+	for idx, interest := range user.Interests {
+		if interest == companyId {
+			interests = util.RemoveIdElement(interests, idx)
+			break
+		}
+	}
+
+	_, err = store.users.UpdateOne(
 		context.TODO(),
 		bson.M{"_id": user.Id},
 		bson.D{
