@@ -29,7 +29,7 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	userPb := mapUser(user)
+	userPb := mapUserToPB(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
@@ -46,7 +46,7 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 		Users: []*pb.User{},
 	}
 	for _, user := range users {
-		current := mapUser(user)
+		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil
@@ -100,7 +100,7 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	}
 	//ctx = tracer.ContextWithSpan(context.Background(), span)
 	for _, user := range users {
-		current := mapUser(user)
+		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil
