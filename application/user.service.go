@@ -167,6 +167,10 @@ func (service *UserService) AddSkill(skill string, userId primitive.ObjectID) er
 	return service.store.AddSkill(skill, userId)
 }
 
+func (service *UserService) RemoveSkill(skill string, userId primitive.ObjectID) error {
+	return service.store.RemoveSkill(skill, userId)
+}
+
 func (service *UserService) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
 	return service.store.AddInterest(companyId, userId)
 }
@@ -177,4 +181,7 @@ func (service *UserService) DeleteExperience(experienceId primitive.ObjectID, us
 
 func (service *UserService) DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error {
 	return service.store.DeleteEducation(educationId, userId)
+}
+func (service *UserService) RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	return service.store.RemoveInterest(companyId, userId)
 }

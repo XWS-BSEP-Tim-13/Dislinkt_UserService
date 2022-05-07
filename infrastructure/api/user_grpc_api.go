@@ -221,6 +221,23 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 	return response, nil
 }
 
+func (handler *UserHandler) RemoveSkill(ctx context.Context, request *pb.RemoveSkillRequest) (*pb.RemoveSkillResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(request.Skill.UserId)
+	if err != nil {
+		return nil, status.Error(500, "Error parsing id.")
+	}
+
+	if err := handler.service.RemoveSkill(request.Skill.Skill, userId); err != nil {
+		return nil, err
+	}
+
+	response := &pb.RemoveSkillResponse{
+		Skill: request.Skill.Skill,
+	}
+
+	return response, nil
+}
+
 func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.InterestsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Interest.CompanyId
@@ -252,6 +269,24 @@ func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.Del
 	educationId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.EducationId)
 	if err := handler.service.DeleteEducation(educationId, userId); err != nil {
 		return nil, err
+	}
+	
+	return response, nil
+}
+
+func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.RemoveInterestRequest) (*pb.RemoveInterestResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(request.Interest.UserId)
+	companyId, err := primitive.ObjectIDFromHex(request.Interest.CompanyId)
+	if err != nil {
+		return nil, status.Error(500, "Error parsing id.")
+	}
+
+	if err := handler.service.RemoveInterest(companyId, userId); err != nil {
+		return nil, err
+	}
+
+	response := &pb.RemoveInterestResponse{
+		CompanyId: request.Interest.CompanyId,
 	}
 
 	return response, nil

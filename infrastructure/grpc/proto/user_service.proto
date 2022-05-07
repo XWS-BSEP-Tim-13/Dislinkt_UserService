@@ -88,6 +88,7 @@ service UserService{
       body: "connection"
     };
   }
+
   rpc AddSkill(SkillsUpdateRequest) returns(UserInfoUpdateResponse) {
     option(google.api.http) = {
       put: "/user/skill",
@@ -115,6 +116,21 @@ service UserService{
       body: "deleteEducation"
     };
   }
+
+  rpc RemoveSkill(RemoveSkillRequest) returns(RemoveSkillResponse) {
+    option(google.api.http) = {
+      put: "/user/removeSkill",
+      body: "skill"
+    };
+  }
+
+  rpc RemoveInterest(RemoveInterestRequest) returns(RemoveInterestResponse) {
+    option(google.api.http) = {
+      put: "/user/removeInterest",
+      body: "interest"
+    };
+  }
+
 }
 message ConnectionResponse{}
 
@@ -272,22 +288,22 @@ message EducationUpdateRequest {
   NewEducation educationUpdate = 1;
 }
 
-message NewSkill {
+message Skill {
   string skill = 1;
   string userId = 2;
 }
 
 message SkillsUpdateRequest {
-  NewSkill skill = 1;
+  Skill skill = 1;
 }
 
-message NewInterest {
+message Interest {
   string companyId = 1;
   string userId = 2;
 }
 
 message InterestsUpdateRequest {
-  NewInterest interest = 1;
+  Interest interest = 1;
 }
 
 message DeleteExperience {
@@ -306,4 +322,20 @@ message DeleteEducation {
 
 message DeleteEducationRequest {
   DeleteEducation deleteEducation = 1;
+}
+
+message RemoveSkillRequest {
+  Skill skill = 1;
+}
+
+message RemoveSkillResponse {
+  string skill = 1;
+}
+
+message RemoveInterestRequest {
+  Interest interest = 1;
+}
+
+message RemoveInterestResponse {
+  string companyId = 1;
 }
