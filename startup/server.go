@@ -6,6 +6,7 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api"
 	user "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
+	userInfo "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto/user_info/user_info"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/persistence"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/startup/config"
 	otgo "github.com/opentracing/opentracing-go"
@@ -35,8 +36,9 @@ func (server *Server) Start() {
 	userService := server.initUserService(userStore, connectionsStore)
 
 	userHandler := server.initUserHandler(userService)
+	userInfoHandler := server.initUserInfoHandler(userStore)
 
-	server.startGrpcServer(userHandler)
+	server.startGrpcServer(userHandler, userInfoHandler)
 }
 
 func (server *Server) initMongoClient() *mongo.Client {
@@ -80,13 +82,19 @@ func (server *Server) initUserHandler(service *application.UserService) *api.Use
 	return api.NewUserHandler(service)
 }
 
-func (server *Server) startGrpcServer(userHandler *api.UserHandler) {
+func (server *Server) initUserInfoHandler(store domain.UserStore) *api.UserInfoHandler {
+	return api.NewUserInfoHandler(application.NewUserInfoService(store))
+}
+
+func (server *Server) startGrpcServer(userHandler *api.UserHandler, userInfoHandler *api.UserInfoHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
 	user.RegisterUserServiceServer(grpcServer, userHandler)
+	userInfo.RegisterUserInfoServiceServer(grpcServer, userInfoHandler)
+
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

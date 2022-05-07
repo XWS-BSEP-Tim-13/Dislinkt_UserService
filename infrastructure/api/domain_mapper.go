@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
-	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
+	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto/user_info/user_info"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

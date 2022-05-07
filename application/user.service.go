@@ -103,10 +103,6 @@ func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
 	return service.store.GetAll()
 }
 
-func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
-	return service.store.UpdatePersonalInfo(user)
-}
-
 func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.RegisteredUser, error) {
 	dbUser, _ := service.store.GetByUsername((*user).Username)
 	if dbUser != nil {
@@ -121,22 +117,4 @@ func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.
 	}
 
 	return user, nil
-}
-
-func (service *UserService) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
-	experience.Id = primitive.NewObjectID()
-	return service.store.AddExperience(experience, userId)
-}
-
-func (service *UserService) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
-	education.Id = primitive.NewObjectID()
-	return service.store.AddEducation(education, userId)
-}
-
-func (service *UserService) AddSkill(skill string, userId primitive.ObjectID) error {
-	return service.store.AddSkill(skill, userId)
-}
-
-func (service *UserService) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
-	return service.store.AddInterest(companyId, userId)
 }

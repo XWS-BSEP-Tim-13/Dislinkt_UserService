@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto/user_info";
+
+package user_info;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service UserInfoService{
+  rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/{userInfo.id}",
+      body: "userInfo"
+    };
+  }
+
+  rpc AddExperience(ExperienceUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience",
+      body: "experienceUpdate"
+    };
+  }
+
+  rpc AddEducation(EducationUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education",
+      body: "educationUpdate"
+    };
+  }
+
+  rpc AddSkill(SkillsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/skill",
+      body: "skill"
+    };
+  }
+
+  rpc AddInterest(InterestsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/interest",
+      body: "interest"
+    };
+  }
+}
+
+message Experience {
+  string id = 1;
+  string title = 2;
+
+  enum EmploymentType {
+    FULL_TIME = 0;
+    PART_TIME = 1;
+    INTERNSHIP = 2;
+  }
+
+  EmploymentType employmentType = 3;
+  string companyName = 4;
+  string location = 5;
+  bool isCurrentlyWorking = 6;
+  google.protobuf.Timestamp startDate = 7;
+  google.protobuf.Timestamp endDate = 8;
+  string industry = 9;
+  string description = 10;
+}
+
+message Education {
+  string id = 1;
+  string school = 2;
+
+  enum Degree {
+    ASSOCIATE = 0;
+    BACHELORS = 1;
+    MASTERS = 2;
+    DOCTORAL = 3;
+  }
+
+  Degree degree = 3;
+  string fieldOfStudy = 4;
+  google.protobuf.Timestamp startDate = 5;
+  google.protobuf.Timestamp endDate = 6;
+  string description = 7;
+}
+
+
+message UserInfo {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string phoneNumber = 4;
+  google.protobuf.Timestamp dateOfBirth = 5;
+  string biography = 6;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 7;
+  string email = 8;
+}
+
+message UserInfoUpdate {
+  UserInfo userInfo = 1;
+}
+
+message UserInfoUpdateResponse{
+  string id = 1;
+}
+
+message NewExperience {
+  string userId = 1;
+  Experience experience = 2;
+}
+
+message ExperienceUpdateRequest {
+  NewExperience experienceUpdate = 1;
+}
+
+message NewEducation {
+  string userId = 1;
+  Education education = 2;
+}
+
+message EducationUpdateRequest {
+  NewEducation educationUpdate = 1;
+}
+
+message NewSkill {
+  string skill = 1;
+  string userId = 2;
+}
+
+message SkillsUpdateRequest {
+  NewSkill skill = 1;
+}
+
+message NewInterest {
+  string companyId = 1;
+  string userId = 2;
+}
+
+message InterestsUpdateRequest {
+  NewInterest interest = 1;
+}
