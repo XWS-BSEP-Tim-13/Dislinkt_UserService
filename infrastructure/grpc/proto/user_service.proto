@@ -75,6 +75,13 @@ service UserService{
       body: "educationUpdate"
     };
   }
+
+  rpc AddSkill(SkillsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/skill",
+      body: "skill"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -230,4 +237,9 @@ message NewEducation {
 
 message EducationUpdateRequest {
   NewEducation educationUpdate = 1;
+}
+
+message SkillsUpdateRequest {
+  string skill = 1;
+  string userId = 2;
 }
