@@ -27,6 +27,7 @@ type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *NewUser, opts ...grpc.CallOption) (*NewUser, error)
 	FindByFilter(ctx context.Context, in *UserFilter, opts ...grpc.CallOption) (*GetAllResponse, error)
 	RequestConnection(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	CheckIfUserCanReadPosts(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ReadPostsResponse, error)
 	GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error)
 	AcceptConnectionRequest(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	UpdatePersonalInfo(ctx context.Context, in *UserInfoUpdate, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
@@ -87,6 +88,15 @@ func (c *userServiceClient) RequestConnection(ctx context.Context, in *Connectio
 	return out, nil
 }
 
+func (c *userServiceClient) CheckIfUserCanReadPosts(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ReadPostsResponse, error) {
+	out := new(ReadPostsResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/CheckIfUserCanReadPosts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetRequestsForUser(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*UserRequests, error) {
 	out := new(UserRequests)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetRequestsForUser", in, out, opts...)
@@ -141,6 +151,7 @@ type UserServiceServer interface {
 	CreateUser(context.Context, *NewUser) (*NewUser, error)
 	FindByFilter(context.Context, *UserFilter) (*GetAllResponse, error)
 	RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error)
+	CheckIfUserCanReadPosts(context.Context, *ConnectionBody) (*ReadPostsResponse, error)
 	GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error)
 	AcceptConnectionRequest(context.Context, *GetRequest) (*ConnectionResponse, error)
 	UpdatePersonalInfo(context.Context, *UserInfoUpdate) (*UserInfoUpdateResponse, error)
@@ -167,6 +178,9 @@ func (UnimplementedUserServiceServer) FindByFilter(context.Context, *UserFilter)
 }
 func (UnimplementedUserServiceServer) RequestConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestConnection not implemented")
+}
+func (UnimplementedUserServiceServer) CheckIfUserCanReadPosts(context.Context, *ConnectionBody) (*ReadPostsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckIfUserCanReadPosts not implemented")
 }
 func (UnimplementedUserServiceServer) GetRequestsForUser(context.Context, *GetRequest) (*UserRequests, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRequestsForUser not implemented")
@@ -282,6 +296,24 @@ func _UserService_RequestConnection_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).RequestConnection(ctx, req.(*ConnectionBody))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CheckIfUserCanReadPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionBody)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckIfUserCanReadPosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/CheckIfUserCanReadPosts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckIfUserCanReadPosts(ctx, req.(*ConnectionBody))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -402,6 +434,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RequestConnection",
 			Handler:    _UserService_RequestConnection_Handler,
+		},
+		{
+			MethodName: "CheckIfUserCanReadPosts",
+			Handler:    _UserService_CheckIfUserCanReadPosts_Handler,
 		},
 		{
 			MethodName: "GetRequestsForUser",
