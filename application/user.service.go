@@ -77,6 +77,31 @@ func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) er
 	return nil
 }
 
+func (service *UserService) DeleteConnection(idFrom, idTo primitive.ObjectID) error {
+	user, err := service.store.Get(idTo)
+	if err != nil {
+		return err
+	}
+	indx := -1
+	for i, connection := range user.Connections {
+		if connection == idFrom {
+			indx = i
+			break
+		}
+	}
+	user.Connections[indx] = user.Connections[len(user.Connections)-1]
+	user.Connections = user.Connections[:len(user.Connections)-1]
+	err = service.store.Update(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) DeleteConnectionRequest(connectionId primitive.ObjectID) {
+	service.connectionStore.Delete(connectionId)
+}
+
 func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
 	resp, err := service.connectionStore.GetRequestsForUser(id)
 	fmt.Printf("Response %d\n", len(resp))

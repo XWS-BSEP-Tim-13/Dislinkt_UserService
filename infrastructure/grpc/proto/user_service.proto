@@ -75,6 +75,19 @@ service UserService{
       body: "educationUpdate"
     };
   }
+
+  rpc DeleteConnectionRequest(GetRequest) returns(ConnectionResponse){
+      option(google.api.http) = {
+        delete: "/connection-request"
+      };
+  }
+
+  rpc DeleteConnection(ConnectionBody) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/delete-connection"
+      body: "connection"
+    };
+  }
 }
 message ConnectionResponse{}
 

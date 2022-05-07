@@ -78,6 +78,29 @@ func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request
 	return new(pb.ConnectionResponse), nil
 }
 
+func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	connectionId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	handler.service.DeleteConnectionRequest(connectionId)
+	return new(pb.ConnectionResponse), nil
+}
+
+func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
+	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
+	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
+	if err != nil || err1 != nil {
+		return nil, err
+	}
+	err = handler.service.DeleteConnection(idFrom, idTo)
+	if err != nil {
+		return nil, err
+	}
+	return new(pb.ConnectionResponse), nil
+}
+
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
