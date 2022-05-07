@@ -85,10 +85,15 @@ func (service *UserService) DeleteConnection(idFrom, idTo primitive.ObjectID) er
 	}
 	indx := -1
 	for i, connection := range user.Connections {
+		fmt.Printf("Saved connection %s \n", connection)
 		if connection == idFrom {
 			indx = i
 			break
 		}
+	}
+	fmt.Printf("Index %d \n", indx)
+	if indx == -1 {
+		return nil
 	}
 	user.Connections[indx] = user.Connections[len(user.Connections)-1]
 	user.Connections = user.Connections[:len(user.Connections)-1]

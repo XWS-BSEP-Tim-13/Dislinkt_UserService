@@ -91,6 +91,7 @@ func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request
 }
 
 func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	fmt.Printf("Request: %s, id to: %s\n", request.Connection.IdFrom, request.Connection.IdTo)
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
 	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
