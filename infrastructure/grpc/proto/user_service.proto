@@ -101,6 +101,13 @@ service UserService{
       body: "interest"
     };
   }
+
+  rpc DeleteExperience(DeleteExperienceRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience/{deleteExperience.experienceId}",
+      body: "deleteExperience"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -274,4 +281,13 @@ message NewInterest {
 
 message InterestsUpdateRequest {
   NewInterest interest = 1;
+}
+
+message DeleteExperience {
+  string experienceId = 1;
+  string userId = 2;
+}
+
+message DeleteExperienceRequest {
+  DeleteExperience deleteExperience = 1;
 }

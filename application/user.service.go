@@ -170,3 +170,7 @@ func (service *UserService) AddSkill(skill string, userId primitive.ObjectID) er
 func (service *UserService) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
 	return service.store.AddInterest(companyId, userId)
 }
+
+func (service *UserService) DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error {
+	return service.store.DeleteExperience(experienceId, userId)
+}

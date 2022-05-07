@@ -232,3 +232,15 @@ func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.Interes
 
 	return response, nil
 }
+
+func (handler *UserHandler) DeleteExperience(ctx context.Context, request *pb.DeleteExperienceRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.DeleteExperience.ExperienceId
+	userId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.UserId)
+	experienceId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.ExperienceId)
+	if err := handler.service.DeleteExperience(experienceId, userId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

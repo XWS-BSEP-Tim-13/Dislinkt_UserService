@@ -192,6 +192,23 @@ func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId 
 	return err
 }
 
+func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	experiences, errDel := util.DeleteExperience(user.Experiences, experienceId)
+	if errDel != nil {
+		return errDel
+	}
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"experiences", experiences}}},
+		},
+	)
+
+	return err
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser
