@@ -152,6 +152,20 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 	return err
 }
 
+func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	skills := append(user.Skills, skill)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"skills", skills}}},
+		},
+	)
+
+	return err
+}
+
 func decode(cursor *mongo.Cursor) (users []*domain.RegisteredUser, err error) {
 	for cursor.Next(context.TODO()) {
 		var user domain.RegisteredUser

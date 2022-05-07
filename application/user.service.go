@@ -116,3 +116,7 @@ func (service *UserService) AddEducation(education *domain.Education, userId pri
 	education.Id = primitive.NewObjectID()
 	return service.store.AddEducation(education, userId)
 }
+
+func (service *UserService) AddSkill(skill string, userId primitive.ObjectID) error {
+	return service.store.AddSkill(skill, userId)
+}

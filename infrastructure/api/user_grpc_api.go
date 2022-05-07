@@ -166,3 +166,15 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 
 	return response, nil
 }
+
+func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	response := new(pb.UserInfoUpdateResponse)
+	response.Id = request.Skill
+	userId, _ := primitive.ObjectIDFromHex(request.UserId)
+
+	if err := handler.service.AddSkill(request.Skill, userId); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
