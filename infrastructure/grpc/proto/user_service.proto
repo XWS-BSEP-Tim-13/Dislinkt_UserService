@@ -78,7 +78,7 @@ service UserService{
 
   rpc DeleteConnectionRequest(GetRequest) returns(ConnectionResponse){
       option(google.api.http) = {
-        delete: "/connection-request"
+        delete: "/connection-request/{id}"
       };
   }
 
