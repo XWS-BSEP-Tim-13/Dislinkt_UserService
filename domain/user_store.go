@@ -13,4 +13,6 @@ type UserStore interface {
 	GetByUsername(username string) (*RegisteredUser, error)
 	AddExperience(experience *Experience, userId primitive.ObjectID) error
 	AddEducation(education *Education, userId primitive.ObjectID) error
+	AddSkill(skill string, userId primitive.ObjectID) error
+	AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error
 }

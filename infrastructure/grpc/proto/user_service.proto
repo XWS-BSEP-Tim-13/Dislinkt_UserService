@@ -88,6 +88,19 @@ service UserService{
       body: "connection"
     };
   }
+  rpc AddSkill(SkillsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/skill",
+      body: "skill"
+    };
+  }
+
+  rpc AddInterest(InterestsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/interest",
+      body: "interest"
+    };
+  }
 }
 message ConnectionResponse{}
 
@@ -243,4 +256,22 @@ message NewEducation {
 
 message EducationUpdateRequest {
   NewEducation educationUpdate = 1;
+}
+
+message NewSkill {
+  string skill = 1;
+  string userId = 2;
+}
+
+message SkillsUpdateRequest {
+  NewSkill skill = 1;
+}
+
+message NewInterest {
+  string companyId = 1;
+  string userId = 2;
+}
+
+message InterestsUpdateRequest {
+  NewInterest interest = 1;
 }

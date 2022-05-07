@@ -35,6 +35,8 @@ type UserServiceClient interface {
 	AddEducation(ctx context.Context, in *EducationUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	DeleteConnectionRequest(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	DeleteConnection(ctx context.Context, in *ConnectionBody, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	AddSkill(ctx context.Context, in *SkillsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
+	AddInterest(ctx context.Context, in *InterestsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 }
 
 type userServiceClient struct {
@@ -162,6 +164,24 @@ func (c *userServiceClient) DeleteConnection(ctx context.Context, in *Connection
 	return out, nil
 }
 
+func (c *userServiceClient) AddSkill(ctx context.Context, in *SkillsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/AddSkill", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddInterest(ctx context.Context, in *InterestsUpdateRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error) {
+	out := new(UserInfoUpdateResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/AddInterest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -179,6 +199,8 @@ type UserServiceServer interface {
 	AddEducation(context.Context, *EducationUpdateRequest) (*UserInfoUpdateResponse, error)
 	DeleteConnectionRequest(context.Context, *GetRequest) (*ConnectionResponse, error)
 	DeleteConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error)
+	AddSkill(context.Context, *SkillsUpdateRequest) (*UserInfoUpdateResponse, error)
+	AddInterest(context.Context, *InterestsUpdateRequest) (*UserInfoUpdateResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -224,6 +246,12 @@ func (UnimplementedUserServiceServer) DeleteConnectionRequest(context.Context, *
 }
 func (UnimplementedUserServiceServer) DeleteConnection(context.Context, *ConnectionBody) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnection not implemented")
+}
+func (UnimplementedUserServiceServer) AddSkill(context.Context, *SkillsUpdateRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddSkill not implemented")
+}
+func (UnimplementedUserServiceServer) AddInterest(context.Context, *InterestsUpdateRequest) (*UserInfoUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddInterest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -472,6 +500,42 @@ func _UserService_DeleteConnection_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_AddSkill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SkillsUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddSkill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/AddSkill",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddSkill(ctx, req.(*SkillsUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddInterest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InterestsUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddInterest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/AddInterest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddInterest(ctx, req.(*InterestsUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -530,6 +594,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteConnection",
 			Handler:    _UserService_DeleteConnection_Handler,
+		},
+		{
+			MethodName: "AddSkill",
+			Handler:    _UserService_AddSkill_Handler,
+		},
+		{
+			MethodName: "AddInterest",
+			Handler:    _UserService_AddInterest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

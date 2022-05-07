@@ -2,8 +2,10 @@ package persistence
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	util "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -146,6 +148,44 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"educations", educations}}},
+		},
+	)
+
+	return err
+}
+
+func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	skillExists := util.ContainsStr(user.Skills, skill)
+	if skillExists {
+		err := errors.New("skill already exists")
+		return err
+	}
+	skills := append(user.Skills, skill)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"skills", skills}}},
+		},
+	)
+
+	return err
+}
+
+func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	user, _ := store.Get(userId)
+	interestExists := util.ContainsId(user.Interests, companyId)
+	if interestExists {
+		err := errors.New("interest already added")
+		return err
+	}
+	interests := append(user.Interests, companyId)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"interests", interests}}},
 		},
 	)
 
