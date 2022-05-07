@@ -4,11 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
-	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
-	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api/dto"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
@@ -32,27 +29,10 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	userPb := mapUserToPB(user)
+	userPb := mapUser(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
-	return response, nil
-}
-
-func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
-	fmt.Println((*request).User)
-	user := mapUserToDomain(request.User)
-	fmt.Println(user)
-
-	newUser, err := handler.service.CreateNewUser(user)
-	if err != nil {
-		return nil, status.Error(400, err.Error())
-	}
-
-	response := &pb.NewUser{
-		User: mapUserToPB(newUser),
-	}
-
 	return response, nil
 }
 
@@ -66,7 +46,7 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 		Users: []*pb.User{},
 	}
 	for _, user := range users {
-		current := mapUserToPB(user)
+		current := mapUser(user)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil
@@ -82,10 +62,20 @@ func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.
 		Requests: []*pb.ConnectionRequest{},
 	}
 	for _, request := range requests {
+		fmt.Printf("Request: %s, id to: %s\n", request.To.FirstName, request.To.LastName)
 		current := mapConnectionRequest(request)
 		response.Requests = append(response.Requests, current)
 	}
 	return response, nil
+}
+
+func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	connectionId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	handler.service.AcceptConnection(connectionId)
+	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
@@ -110,49 +100,8 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	}
 	//ctx = tracer.ContextWithSpan(context.Background(), span)
 	for _, user := range users {
-		current := mapUserToPB(user)
+		current := mapUser(user)
 		response.Users = append(response.Users, current)
 	}
-	return response, nil
-}
-
-func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UserInfoUpdate) (*pb.UserInfoUpdateResponse, error) {
-	id, _ := primitive.ObjectIDFromHex(request.UserInfo.Id)
-	userInfo := dto.NewUserInfo(id, request.UserInfo.FirstName, request.UserInfo.LastName, enum.Gender(request.UserInfo.Gender), request.UserInfo.DateOfBirth.AsTime(),
-		request.UserInfo.Email, request.UserInfo.PhoneNumber, request.UserInfo.Biography)
-	user := dto.NewUserFromUserInfo(*userInfo)
-	response := new(pb.UserInfoUpdateResponse)
-	response.Id = request.UserInfo.Id
-
-	if _, err := handler.service.UpdatePersonalInfo(user); err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
-func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.ExperienceUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
-	response := new(pb.UserInfoUpdateResponse)
-	response.Id = request.ExperienceUpdate.UserId
-	exp := mapExperience(request.ExperienceUpdate.Experience)
-	expId, _ := primitive.ObjectIDFromHex(request.ExperienceUpdate.UserId)
-
-	if err := handler.service.AddExperience(exp, expId); err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
-func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.EducationUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
-	response := new(pb.UserInfoUpdateResponse)
-	response.Id = request.EducationUpdate.UserId
-	education := mapEducation(request.EducationUpdate.Education)
-	expId, _ := primitive.ObjectIDFromHex(request.EducationUpdate.UserId)
-
-	if err := handler.service.AddEducation(education, expId); err != nil {
-		return nil, err
-	}
-
 	return response, nil
 }

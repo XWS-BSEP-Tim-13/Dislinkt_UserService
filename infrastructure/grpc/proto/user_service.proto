@@ -42,6 +42,12 @@ service UserService{
     };
   }
 
+  rpc AcceptConnectionRequest(GetRequest) returns(ConnectionResponse){
+    option(google.api.http) = {
+      post: "/connection-request/accept/{id}"
+    };
+  }
+
   rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
     option(google.api.http) = {
       put: "/user/{userInfo.id}",

@@ -1,7 +1,6 @@
 package application
 
 import (
-	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -47,8 +46,21 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 	return nil
 }
 
+func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) error {
+	connection, err := service.connectionStore.Get(connectionId)
+	if err != nil {
+		return err
+	}
+	connection.To.Connections = append(connection.To.Connections, connection.From.Id)
+	fmt.Printf("Saved connection %s \n", connection.To.Connections)
+	service.store.Update(&connection.To)
+	return nil
+}
+
 func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
-	return service.connectionStore.GetRequestsForUser(id)
+	resp, err := service.connectionStore.GetRequestsForUser(id)
+	fmt.Printf("Response %d\n", len(resp))
+	return resp, err
 }
 
 func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {
@@ -68,34 +80,4 @@ func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUse
 
 func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
 	return service.store.GetAll()
-}
-
-func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
-	return service.store.UpdatePersonalInfo(user)
-}
-
-func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.RegisteredUser, error) {
-	dbUser, _ := service.store.GetByUsername((*user).Username)
-	if dbUser != nil {
-		err := errors.New("username already exists")
-		return nil, err
-	}
-	(*user).Id = primitive.NewObjectID()
-	err := service.store.Insert(user)
-	if err != nil {
-		err := errors.New("error while creating new user")
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func (service *UserService) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
-	experience.Id = primitive.NewObjectID()
-	return service.store.AddExperience(experience, userId)
-}
-
-func (service *UserService) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
-	education.Id = primitive.NewObjectID()
-	return service.store.AddEducation(education, userId)
 }

@@ -18,7 +18,7 @@ type ConnectionsMongoDBStore struct {
 }
 
 func (store ConnectionsMongoDBStore) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
-	filter := bson.D{{"to", id}}
+	filter := bson.D{{"to._id", id}}
 	return store.filter(filter)
 }
 
