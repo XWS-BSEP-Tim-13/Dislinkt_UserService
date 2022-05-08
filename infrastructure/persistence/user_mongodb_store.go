@@ -270,7 +270,7 @@ func (store *UserMongoDBStore) RemoveInterest(companyId primitive.ObjectID, user
 	var interests []primitive.ObjectID
 	for idx, interest := range user.Interests {
 		if interest == companyId {
-			interests = util.RemoveIdElement(interests, idx)
+			interests = util.RemoveIdElement(user.Interests, idx)
 			break
 		}
 	}
