@@ -34,6 +34,7 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 	fmt.Printf("In service trace: \n")
 	if toUser.IsPrivate {
 		var request = domain.ConnectionRequest{
+			Id:          primitive.NewObjectID(),
 			From:        *fromUser,
 			To:          *toUser,
 			RequestTime: time.Now(),
