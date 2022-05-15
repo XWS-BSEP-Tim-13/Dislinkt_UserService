@@ -41,6 +41,7 @@ type UserServiceClient interface {
 	DeleteEducation(ctx context.Context, in *DeleteEducationRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	RemoveSkill(ctx context.Context, in *RemoveSkillRequest, opts ...grpc.CallOption) (*RemoveSkillResponse, error)
 	RemoveInterest(ctx context.Context, in *RemoveInterestRequest, opts ...grpc.CallOption) (*RemoveInterestResponse, error)
+	GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
 }
 
 type userServiceClient struct {
@@ -222,6 +223,15 @@ func (c *userServiceClient) RemoveInterest(ctx context.Context, in *RemoveIntere
 	return out, nil
 }
 
+func (c *userServiceClient) GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error) {
+	out := new(UserConnectionUsernames)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetConnectionUsernamesForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -245,6 +255,7 @@ type UserServiceServer interface {
 	DeleteEducation(context.Context, *DeleteEducationRequest) (*UserInfoUpdateResponse, error)
 	RemoveSkill(context.Context, *RemoveSkillRequest) (*RemoveSkillResponse, error)
 	RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error)
+	GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -308,6 +319,9 @@ func (UnimplementedUserServiceServer) RemoveSkill(context.Context, *RemoveSkillR
 }
 func (UnimplementedUserServiceServer) RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveInterest not implemented")
+}
+func (UnimplementedUserServiceServer) GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionUsernamesForUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -664,6 +678,24 @@ func _UserService_RemoveInterest_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetConnectionUsernamesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetConnectionUsernamesForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetConnectionUsernamesForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetConnectionUsernamesForUser(ctx, req.(*UserUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -746,6 +778,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveInterest",
 			Handler:    _UserService_RemoveInterest_Handler,
+		},
+		{
+			MethodName: "GetConnectionUsernamesForUser",
+			Handler:    _UserService_GetConnectionUsernamesForUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -131,11 +131,25 @@ service UserService{
     };
   }
 
+  rpc GetConnectionUsernamesForUser(UserUsername) returns(UserConnectionUsernames){
+    option(google.api.http) = {
+      get: "/user/user-connection-usernames/{username}",
+    };
+  }
+
 }
 message ConnectionResponse{}
 
 message ReadPostsResponse{
   bool isReadable = 1;
+}
+
+message UserUsername{
+  string username = 1;
+}
+
+message UserConnectionUsernames{
+  repeated string usernames = 1;
 }
 
 message ConnectionBody{

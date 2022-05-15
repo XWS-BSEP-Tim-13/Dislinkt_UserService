@@ -48,6 +48,20 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 	return nil
 }
 
+func (service *UserService) GetConnectionUsernamesForUser(username string) ([]string, error) {
+	user, err := service.store.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	var retVal []string
+	for _, conId := range user.Connections {
+		conUser, _ := service.store.Get(conId)
+		retVal = append(retVal, conUser.Username)
+		fmt.Printf("Username : %s\n", conUser.Username)
+	}
+	return retVal, nil
+}
+
 func (service *UserService) CheckIfUserCanReadPosts(idFrom, idTo primitive.ObjectID) (bool, error) {
 	toUser, err := service.store.Get(idTo)
 	if err != nil {

@@ -117,6 +117,18 @@ func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.C
 	return new(pb.ConnectionResponse), nil
 }
 
+func (handler *UserHandler) GetConnectionUsernamesForUser(ctx context.Context, request *pb.UserUsername) (*pb.UserConnectionUsernames, error) {
+	fmt.Printf("Username: %s\n", request.Username)
+	connUsernames, err := handler.service.GetConnectionUsernamesForUser(request.Username)
+	response := &pb.UserConnectionUsernames{
+		Usernames: connUsernames,
+	}
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request *pb.ConnectionBody) (*pb.ReadPostsResponse, error) {
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
@@ -270,7 +282,7 @@ func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.Del
 	if err := handler.service.DeleteEducation(educationId, userId); err != nil {
 		return nil, err
 	}
-	
+
 	return response, nil
 }
 
