@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api/dto"
@@ -300,6 +301,17 @@ func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.Remo
 	response := &pb.RemoveInterestResponse{
 		CompanyId: request.Interest.CompanyId,
 	}
+}
 
+func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
+	username := request.Id
+	user, err := handler.service.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	userPb := mapUserToPB(user)
+	response := &pb.GetResponse{
+		User: userPb,
+	}
 	return response, nil
 }
