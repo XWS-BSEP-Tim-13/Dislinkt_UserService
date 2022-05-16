@@ -301,6 +301,7 @@ func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.Remo
 	response := &pb.RemoveInterestResponse{
 		CompanyId: request.Interest.CompanyId,
 	}
+	return response, nil
 }
 
 func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
