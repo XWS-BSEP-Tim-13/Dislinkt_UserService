@@ -3,10 +3,11 @@ package application
 import (
 	"errors"
 	"fmt"
-	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
+
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserService struct {
@@ -199,4 +200,11 @@ func (service *UserService) DeleteEducation(educationId primitive.ObjectID, user
 }
 func (service *UserService) RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
 	return service.store.RemoveInterest(companyId, userId)
+}
+func (service *UserService) GetByUsername(username string) (*domain.RegisteredUser, error) {
+	user, err := service.store.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
