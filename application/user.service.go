@@ -60,6 +60,7 @@ func (service *UserService) GetConnectionUsernamesForUser(username string) ([]st
 		retVal = append(retVal, conUser.Username)
 		fmt.Printf("Username : %s\n", conUser.Username)
 	}
+	retVal = append(retVal, username)
 	return retVal, nil
 }
 
