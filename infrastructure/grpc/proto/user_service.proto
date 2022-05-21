@@ -20,6 +20,12 @@ service UserService{
     };
   }
 
+  rpc GetByEmail(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/user/{id}/email"
+    };
+  }
+
   rpc GetAll(GetAllRequest) returns(GetAllResponse) {
     option (google.api.http) = {
       get: "/user"

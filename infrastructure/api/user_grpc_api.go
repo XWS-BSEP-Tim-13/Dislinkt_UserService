@@ -316,3 +316,16 @@ func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRe
 	}
 	return response, nil
 }
+
+func (handler *UserHandler) GetByEmail(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
+	username := request.Id
+	user, err := handler.service.GetByEmail(username)
+	if err != nil {
+		return nil, err
+	}
+	userPb := mapUserToPB(user)
+	response := &pb.GetResponse{
+		User: userPb,
+	}
+	return response, nil
+}

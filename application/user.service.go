@@ -209,3 +209,11 @@ func (service *UserService) GetByUsername(username string) (*domain.RegisteredUs
 	}
 	return user, nil
 }
+
+func (service *UserService) GetByEmail(email string) (*domain.RegisteredUser, error) {
+	user, err := service.store.GetByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
