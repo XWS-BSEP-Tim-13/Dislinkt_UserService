@@ -23,12 +23,12 @@ func NewUserService(store domain.UserStore, connectionStore domain.ConnectionReq
 }
 
 func (service *UserService) Get(id primitive.ObjectID) (*domain.RegisteredUser, error) {
-	return service.store.Get(id)
+	return service.store.GetActiveById(id)
 }
 
 func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) error {
-	toUser, err := service.store.Get(idTo)
-	fromUser, _ := service.store.Get(idFrom)
+	toUser, err := service.store.GetActiveById(idTo)
+	fromUser, _ := service.store.GetActiveById(idFrom)
 	if err != nil {
 		return err
 	}
@@ -50,13 +50,13 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 }
 
 func (service *UserService) GetConnectionUsernamesForUser(username string) ([]string, error) {
-	user, err := service.store.GetByUsername(username)
+	user, err := service.store.GetActiveByUsername(username)
 	if err != nil {
 		return nil, err
 	}
 	var retVal []string
 	for _, conId := range user.Connections {
-		conUser, _ := service.store.Get(conId)
+		conUser, _ := service.store.GetActiveById(conId)
 		retVal = append(retVal, conUser.Username)
 		fmt.Printf("Username : %s\n", conUser.Username)
 	}
@@ -65,7 +65,7 @@ func (service *UserService) GetConnectionUsernamesForUser(username string) ([]st
 }
 
 func (service *UserService) CheckIfUserCanReadPosts(idFrom, idTo primitive.ObjectID) (bool, error) {
-	toUser, err := service.store.Get(idTo)
+	toUser, err := service.store.GetActiveById(idTo)
 	if err != nil {
 		return false, err
 	}
@@ -96,7 +96,7 @@ func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) er
 }
 
 func (service *UserService) DeleteConnection(idFrom, idTo primitive.ObjectID) error {
-	user, err := service.store.Get(idTo)
+	user, err := service.store.GetActiveById(idTo)
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain
 }
 
 func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUser, error) {
-	users, err := service.store.GetAll()
+	users, err := service.store.GetAllActive()
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (service *UserService) FindByFilter(filter string) ([]*domain.RegisteredUse
 }
 
 func (service *UserService) GetAll() ([]*domain.RegisteredUser, error) {
-	return service.store.GetAll()
+	return service.store.GetAllActive()
 }
 
 func (service *UserService) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
@@ -160,7 +160,15 @@ func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.
 		err := errors.New("username already exists")
 		return nil, err
 	}
+
+	dbUser, _ = service.store.GetByEmail((*user).Username)
+	if dbUser != nil {
+		err := errors.New("email already exists")
+		return nil, err
+	}
+
 	(*user).Id = primitive.NewObjectID()
+	(*user).IsActive = false
 	err := service.store.Insert(user)
 	if err != nil {
 		err := errors.New("error while creating new user")
@@ -203,7 +211,7 @@ func (service *UserService) RemoveInterest(companyId primitive.ObjectID, userId 
 	return service.store.RemoveInterest(companyId, userId)
 }
 func (service *UserService) GetByUsername(username string) (*domain.RegisteredUser, error) {
-	user, err := service.store.GetByUsername(username)
+	user, err := service.store.GetActiveByUsername(username)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +219,7 @@ func (service *UserService) GetByUsername(username string) (*domain.RegisteredUs
 }
 
 func (service *UserService) GetByEmail(email string) (*domain.RegisteredUser, error) {
-	user, err := service.store.GetByEmail(email)
+	user, err := service.store.GetActiveByEmail(email)
 	if err != nil {
 		return nil, err
 	}

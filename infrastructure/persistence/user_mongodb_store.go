@@ -28,18 +28,28 @@ func NewUserMongoDBStore(client *mongo.Client) domain.UserStore {
 	}
 }
 
-func (store *UserMongoDBStore) Get(id primitive.ObjectID) (*domain.RegisteredUser, error) {
-	filter := bson.M{"_id": id}
+func (store *UserMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.RegisteredUser, error) {
+	filter := bson.M{"_id": id, "is_active": true}
 	return store.filterOne(filter)
 }
 
-func (store *UserMongoDBStore) GetAll() ([]*domain.RegisteredUser, error) {
-	filter := bson.D{{}}
+func (store *UserMongoDBStore) GetAllActive() ([]*domain.RegisteredUser, error) {
+	filter := bson.D{{"is_active", "true"}}
 	return store.filter(filter)
+}
+
+func (store *UserMongoDBStore) GetActiveByUsername(username string) (*domain.RegisteredUser, error) {
+	filter := bson.M{"username": username, "is_active": true}
+	return store.filterOne(filter)
 }
 
 func (store *UserMongoDBStore) GetByUsername(username string) (*domain.RegisteredUser, error) {
 	filter := bson.M{"username": username}
+	return store.filterOne(filter)
+}
+
+func (store *UserMongoDBStore) GetActiveByEmail(email string) (*domain.RegisteredUser, error) {
+	filter := bson.M{"email": email, "is_active": true}
 	return store.filterOne(filter)
 }
 
@@ -90,7 +100,7 @@ func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.Regis
 }
 
 func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) {
-	projection := bson.D{{"first_name", 1}, {"last_name", 1}}
+	projection := bson.D{{"first_name", 1}, {"last_name", 1}, {"is_active", true}}
 	opts := options.Find().SetProjection(projection)
 	cursor, err := store.users.Find(context.TODO(), bson.D{}, opts)
 	defer cursor.Close(context.TODO())
@@ -114,7 +124,7 @@ func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) 
 func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
 	result, err := store.users.UpdateOne(
 		context.TODO(),
-		bson.M{"_id": user.Id},
+		bson.M{"_id": user.Id, "is_active": true},
 		bson.D{
 			{"$set", bson.D{{"first_name", user.FirstName},
 				{"last_name", user.LastName},
@@ -132,7 +142,7 @@ func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (
 }
 
 func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	experiences := append(user.Experiences, *experience)
 	_, err := store.users.UpdateOne(
 		context.TODO(),
@@ -146,7 +156,7 @@ func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, user
 }
 
 func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	educations := append(user.Educations, *education)
 	_, err := store.users.UpdateOne(
 		context.TODO(),
@@ -160,7 +170,7 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 }
 
 func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	skillExists := util.ContainsStr(user.Skills, skill)
 	if skillExists {
 		err := errors.New("skill already exists")
@@ -179,7 +189,7 @@ func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID)
 }
 
 func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.ObjectID) error {
-	user, err := store.Get(userId)
+	user, err := store.GetActiveById(userId)
 	if err != nil {
 		return errors.New("no such user")
 	}
@@ -209,7 +219,7 @@ func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.
 }
 
 func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	interestExists := util.ContainsId(user.Interests, companyId)
 	if interestExists {
 		err := errors.New("interest already added")
@@ -228,7 +238,7 @@ func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId 
 }
 
 func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	experiences, errDel := util.DeleteExperience(user.Experiences, experienceId)
 	if errDel != nil {
 		return errDel
@@ -245,7 +255,7 @@ func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID,
 }
 
 func (store *UserMongoDBStore) DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.Get(userId)
+	user, _ := store.GetActiveById(userId)
 	educations, errDel := util.DeleteEducation(user.Educations, educationId)
 	if errDel != nil {
 		return errDel
@@ -262,7 +272,7 @@ func (store *UserMongoDBStore) DeleteEducation(educationId primitive.ObjectID, u
 }
 
 func (store *UserMongoDBStore) RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, err := store.Get(userId)
+	user, err := store.GetActiveById(userId)
 	if err != nil {
 		return errors.New("no such user")
 	}

@@ -39,6 +39,7 @@ type RegisteredUser struct {
 	DateOfBirth time.Time            `bson:"date_of_birth"`
 	Biography   string               `bson:"biography"`
 	IsPrivate   bool                 `bson:"is_private"`
+	IsActive    bool                 `bson:"is_active"`
 	Experiences []Experience         `bson:"experiences"`
 	Educations  []Education          `bson:"educations"`
 	Skills      []string             `bson:"skills"`

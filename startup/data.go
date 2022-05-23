@@ -17,6 +17,7 @@ var users = []*domain.RegisteredUser{
 		DateOfBirth: time.Time{},
 		Biography:   "Entrepreneur, investor, and business magnate. Next I’m buying Coca-Cola to put the cocaine back in.",
 		IsPrivate:   false,
+		IsActive:    true,
 		Username:    "srdjansukovic",
 		Experiences: []domain.Experience{
 			{
@@ -70,6 +71,7 @@ var users = []*domain.RegisteredUser{
 		DateOfBirth: time.Time{},
 		Biography:   "biography sample",
 		IsPrivate:   true,
+		IsActive:    true,
 		Experiences: []domain.Experience{},
 		Educations:  []domain.Education{},
 		Skills:      []string{"s1", "s2"},
@@ -104,6 +106,7 @@ var users = []*domain.RegisteredUser{
 		DateOfBirth: time.Time{},
 		Biography:   "biography sample",
 		IsPrivate:   false,
+		IsActive:    true,
 		Experiences: []domain.Experience{},
 		Educations:  []domain.Education{},
 		Skills:      []string{"s1", "s2"},
@@ -121,6 +124,7 @@ var users = []*domain.RegisteredUser{
 		DateOfBirth: time.Time{},
 		Biography:   "biography sample",
 		IsPrivate:   false,
+		IsActive:    true,
 		Experiences: []domain.Experience{},
 		Educations:  []domain.Education{},
 		Skills:      []string{"s1", "s2"},
@@ -129,7 +133,7 @@ var users = []*domain.RegisteredUser{
 	},
 }
 
-var connections = []*domain.ConnectionRequest{}
+var connections []*domain.ConnectionRequest
 
 func getObjectId(id string) primitive.ObjectID {
 	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {
