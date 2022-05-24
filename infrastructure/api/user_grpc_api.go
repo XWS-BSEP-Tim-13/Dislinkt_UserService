@@ -8,18 +8,21 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api/dto"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
 	pb.UnimplementedUserServiceServer
-	service *application.UserService
+	service     *application.UserService
+	goValidator *util.GoValidator
 }
 
-func NewUserHandler(service *application.UserService) *UserHandler {
+func NewUserHandler(service *application.UserService, goValidator *util.GoValidator) *UserHandler {
 	return &UserHandler{
-		service: service,
+		service:     service,
+		goValidator: goValidator,
 	}
 }
 
@@ -208,7 +211,11 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
 	fmt.Println((*request).User)
 	user := mapUserToDomain(request.User)
-	fmt.Println(user)
+
+	err := handler.goValidator.Validator.Struct(user)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
 
 	newUser, err := handler.service.CreateNewUser(user)
 	if err != nil {

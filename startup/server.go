@@ -8,6 +8,7 @@ import (
 	user "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/persistence"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/startup/config"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,8 +34,9 @@ func (server *Server) Start() {
 	userStore := server.initUserStore(mongoClient)
 	connectionsStore := server.initConnectionStore(mongoClient)
 	userService := server.initUserService(userStore, connectionsStore)
+	goValidator := server.initGoValidator()
 
-	userHandler := server.initUserHandler(userService)
+	userHandler := server.initUserHandler(userService, goValidator)
 
 	server.startGrpcServer(userHandler)
 }
@@ -76,8 +78,12 @@ func (server *Server) initUserService(store domain.UserStore, conStore domain.Co
 	return application.NewUserService(store, conStore)
 }
 
-func (server *Server) initUserHandler(service *application.UserService) *api.UserHandler {
-	return api.NewUserHandler(service)
+func (server *Server) initGoValidator() *util.GoValidator {
+	return util.NewGoValidator()
+}
+
+func (server *Server) initUserHandler(service *application.UserService, goValidator *util.GoValidator) *api.UserHandler {
+	return api.NewUserHandler(service, goValidator)
 }
 
 func (server *Server) startGrpcServer(userHandler *api.UserHandler) {

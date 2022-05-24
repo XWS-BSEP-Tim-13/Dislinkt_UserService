@@ -31,13 +31,13 @@ type Experience struct {
 
 type RegisteredUser struct {
 	Id          primitive.ObjectID   `bson:"_id"`
-	FirstName   string               `bson:"first_name"`
-	LastName    string               `bson:"last_name"`
-	Email       string               `bson:"email"`
-	PhoneNumber string               `bson:"phone_number"`
+	FirstName   string               `bson:"first_name" validate:"required,alphaSpace"`
+	LastName    string               `bson:"last_name" validate:"required,alphaSpace"`
+	Email       string               `bson:"email" validate:"required,email"`
+	PhoneNumber string               `bson:"phone_number" validate:"required,numeric,min=9,max=10"`
 	Gender      enum.Gender          `bson:"gender"`
-	DateOfBirth time.Time            `bson:"date_of_birth"`
-	Biography   string               `bson:"biography"`
+	DateOfBirth time.Time            `bson:"date_of_birth" validate:"required"`
+	Biography   string               `bson:"biography" validate:"required,max=256"`
 	IsPrivate   bool                 `bson:"is_private"`
 	IsActive    bool                 `bson:"is_active"`
 	Experiences []Experience         `bson:"experiences"`
@@ -45,7 +45,7 @@ type RegisteredUser struct {
 	Skills      []string             `bson:"skills"`
 	Interests   []primitive.ObjectID `bson:"interests"`
 	Connections []primitive.ObjectID `bson:"connections"`
-	Username    string               `bson:"username"`
+	Username    string               `bson:"username" validate:"required,username"`
 }
 
 type ConnectionRequest struct {
