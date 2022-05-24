@@ -54,8 +54,3 @@ type ConnectionRequest struct {
 	To          RegisteredUser     `bson:"to"`
 	RequestTime time.Time          `bson:"request_time"`
 }
-
-func NewRegisteredUser(id primitive.ObjectID, fname string, lname string, gender enum.Gender, dob time.Time, email string,
-	phoneNumber string, biography string) {
-
-}
