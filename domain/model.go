@@ -8,9 +8,9 @@ import (
 
 type Education struct {
 	Id           primitive.ObjectID `bson:"_id"`
-	School       string             `bson:"school"`
+	School       string             `bson:"school" validate:"required,alphaNumSigns"`
 	Degree       enum.Degree        `bson:"degree"`
-	FieldOfStudy string             `bson:"field_of_study"`
+	FieldOfStudy string             `bson:"field_of_study" validate:"required,alphaNumSigns"`
 	StartDate    time.Time          `bson:"start_date"`
 	EndDate      time.Time          `bson:"end_date"`
 	Description  string             `bson:"description"`
@@ -18,14 +18,14 @@ type Education struct {
 
 type Experience struct {
 	Id                 primitive.ObjectID  `bson:"_id"`
-	Title              string              `bson:"title"`
+	Title              string              `bson:"title" validate:"required,alphaNumSigns"`
 	EmploymentType     enum.EmploymentType `bson:"employment_type"`
-	CompanyName        string              `bson:"company_name"`
-	Location           string              `bson:"location"`
+	CompanyName        string              `bson:"company_name" validate:"alphaNumSigns"`
+	Location           string              `bson:"location" validate:"alphaNumSigns"`
 	IsCurrentlyWorking bool                `bson:"is_currently_working"`
 	StartDate          time.Time           `bson:"start_date"`
 	EndDate            time.Time           `bson:"end_date"`
-	Industry           string              `bson:"industry"`
+	Industry           string              `bson:"industry" validate:"alphaNumSigns"`
 	Description        string              `bson:"description"`
 }
 

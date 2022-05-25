@@ -172,6 +172,13 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 	userInfo := dto.NewUserInfo(id, request.UserInfo.FirstName, request.UserInfo.LastName, enum.Gender(request.UserInfo.Gender), request.UserInfo.DateOfBirth.AsTime(),
 		request.UserInfo.Email, request.UserInfo.PhoneNumber, request.UserInfo.Biography)
 	user := dto.NewUserFromUserInfo(*userInfo)
+
+	validationErr := handler.goValidator.Validator.Struct(user)
+	if validationErr != nil {
+		handler.goValidator.PrintValidationErrors(validationErr)
+		return nil, status.Error(500, validationErr.Error())
+	}
+
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.UserInfo.Id
 
@@ -186,6 +193,13 @@ func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.Exper
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.ExperienceUpdate.UserId
 	exp := mapExperience(request.ExperienceUpdate.Experience)
+
+	validationErr := handler.goValidator.Validator.Struct(exp)
+	if validationErr != nil {
+		handler.goValidator.PrintValidationErrors(validationErr)
+		return nil, status.Error(500, validationErr.Error())
+	}
+
 	expId, _ := primitive.ObjectIDFromHex(request.ExperienceUpdate.UserId)
 
 	if err := handler.service.AddExperience(exp, expId); err != nil {
@@ -199,6 +213,13 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.EducationUpdate.UserId
 	education := mapEducation(request.EducationUpdate.Education)
+
+	validationErr := handler.goValidator.Validator.Struct(education)
+	if validationErr != nil {
+		handler.goValidator.PrintValidationErrors(validationErr)
+		return nil, status.Error(500, validationErr.Error())
+	}
+
 	expId, _ := primitive.ObjectIDFromHex(request.EducationUpdate.UserId)
 
 	if err := handler.service.AddEducation(education, expId); err != nil {
@@ -233,6 +254,12 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Skill.Skill
 	userId, _ := primitive.ObjectIDFromHex(request.Skill.UserId)
+
+	validationErr := handler.goValidator.ValidateSkill(request.Skill.Skill)
+	if validationErr != nil {
+		handler.goValidator.PrintValidationErrors(validationErr)
+		return nil, status.Error(500, validationErr.Error())
+	}
 
 	if err := handler.service.AddSkill(request.Skill.Skill, userId); err != nil {
 		return nil, err

@@ -2737,10 +2737,10 @@ var file_user_service_proto_depIdxs = []int32{
 	34, // 28: user.DeleteEducationRequest.deleteEducation:type_name -> user.DeleteEducation
 	28, // 29: user.RemoveSkillRequest.skill:type_name -> user.Skill
 	30, // 30: user.RemoveInterestRequest.interest:type_name -> user.Interest
-	12, // 31: user.UserService.GetActiveById:input_type -> user.GetRequest
-	12, // 32: user.UserService.GetActiveByUsername:input_type -> user.GetRequest
-	12, // 33: user.UserService.GetActiveByEmail:input_type -> user.GetRequest
-	14, // 34: user.UserService.GetAllActive:input_type -> user.GetAllRequest
+	12, // 31: user.UserService.Get:input_type -> user.GetRequest
+	12, // 32: user.UserService.GetByUsername:input_type -> user.GetRequest
+	12, // 33: user.UserService.GetByEmail:input_type -> user.GetRequest
+	14, // 34: user.UserService.GetAll:input_type -> user.GetAllRequest
 	16, // 35: user.UserService.CreateUser:input_type -> user.NewUser
 	11, // 36: user.UserService.FindByFilter:input_type -> user.UserFilter
 	8,  // 37: user.UserService.RequestConnection:input_type -> user.ConnectionBody
@@ -2759,10 +2759,10 @@ var file_user_service_proto_depIdxs = []int32{
 	36, // 50: user.UserService.RemoveSkill:input_type -> user.RemoveSkillRequest
 	38, // 51: user.UserService.RemoveInterest:input_type -> user.RemoveInterestRequest
 	6,  // 52: user.UserService.GetConnectionUsernamesForUser:input_type -> user.UserUsername
-	13, // 53: user.UserService.GetActiveById:output_type -> user.GetResponse
-	13, // 54: user.UserService.GetActiveByUsername:output_type -> user.GetResponse
-	13, // 55: user.UserService.GetActiveByEmail:output_type -> user.GetResponse
-	15, // 56: user.UserService.GetAllActive:output_type -> user.GetAllResponse
+	13, // 53: user.UserService.Get:output_type -> user.GetResponse
+	13, // 54: user.UserService.GetByUsername:output_type -> user.GetResponse
+	13, // 55: user.UserService.GetByEmail:output_type -> user.GetResponse
+	15, // 56: user.UserService.GetAll:output_type -> user.GetAllResponse
 	16, // 57: user.UserService.CreateUser:output_type -> user.NewUser
 	15, // 58: user.UserService.FindByFilter:output_type -> user.GetAllResponse
 	4,  // 59: user.UserService.RequestConnection:output_type -> user.ConnectionResponse

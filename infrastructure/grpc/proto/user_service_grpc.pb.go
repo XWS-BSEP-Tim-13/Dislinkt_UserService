@@ -56,7 +56,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grp
 
 func (c *userServiceClient) GetByUsername(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveByUsername", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *userServiceClient) GetByUsername(ctx context.Context, in *GetRequest, o
 
 func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveByEmail", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByEmail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetRequest, opts
 
 func (c *userServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetAllActive", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -286,16 +286,16 @@ type UnimplementedUserServiceServer struct {
 }
 
 func (UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveById not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedUserServiceServer) GetByUsername(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveByUsername not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetByUsername not implemented")
 }
 func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveByEmail not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
 }
 func (UnimplementedUserServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllActive not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *NewUser) (*NewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -374,7 +374,7 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveById",
+		FullMethod: "/user.UserService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Get(ctx, req.(*GetRequest))
@@ -392,7 +392,7 @@ func _UserService_GetByUsername_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveByUsername",
+		FullMethod: "/user.UserService/GetByUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetByUsername(ctx, req.(*GetRequest))
@@ -410,7 +410,7 @@ func _UserService_GetByEmail_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveByEmail",
+		FullMethod: "/user.UserService/GetByEmail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetByEmail(ctx, req.(*GetRequest))
@@ -428,7 +428,7 @@ func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetAllActive",
+		FullMethod: "/user.UserService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAll(ctx, req.(*GetAllRequest))
@@ -768,19 +768,19 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetActiveById",
+			MethodName: "Get",
 			Handler:    _UserService_Get_Handler,
 		},
 		{
-			MethodName: "GetActiveByUsername",
+			MethodName: "GetByUsername",
 			Handler:    _UserService_GetByUsername_Handler,
 		},
 		{
-			MethodName: "GetActiveByEmail",
+			MethodName: "GetByEmail",
 			Handler:    _UserService_GetByEmail_Handler,
 		},
 		{
-			MethodName: "GetAllActive",
+			MethodName: "GetAll",
 			Handler:    _UserService_GetAll_Handler,
 		},
 		{
