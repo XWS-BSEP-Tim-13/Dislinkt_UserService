@@ -161,7 +161,7 @@ func (service *UserService) CreateNewUser(user *domain.RegisteredUser) (*domain.
 		return nil, err
 	}
 
-	dbUser, _ = service.store.GetByEmail((*user).Username)
+	dbUser, _ = service.store.GetByEmail((*user).Email)
 	if dbUser != nil {
 		err := errors.New("email already exists")
 		return nil, err
