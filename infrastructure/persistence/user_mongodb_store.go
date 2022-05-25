@@ -34,12 +34,12 @@ func (store *UserMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.Reg
 }
 
 func (store *UserMongoDBStore) GetAllActive() ([]*domain.RegisteredUser, error) {
-	filter := bson.D{{"is_active", true}}
+	filter := bson.D{{}}
 	return store.filter(filter)
 }
 
 func (store *UserMongoDBStore) GetActiveByUsername(username string) (*domain.RegisteredUser, error) {
-	filter := bson.M{"username": username, "is_active": true}
+	filter := bson.M{"username": username}
 	return store.filterOne(filter)
 }
 
@@ -49,7 +49,7 @@ func (store *UserMongoDBStore) GetByUsername(username string) (*domain.Registere
 }
 
 func (store *UserMongoDBStore) GetActiveByEmail(email string) (*domain.RegisteredUser, error) {
-	filter := bson.M{"email": email, "is_active": true}
+	filter := bson.M{"email": email}
 	return store.filterOne(filter)
 }
 
