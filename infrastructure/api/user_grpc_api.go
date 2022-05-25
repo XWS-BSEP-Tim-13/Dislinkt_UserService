@@ -229,6 +229,21 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 	return response, nil
 }
 
+func (handler *UserHandler) ActivateAccount(ctx context.Context, request *pb.ActivateAccountRequest) (*pb.ActivateAccountResponse, error) {
+	email := request.Email
+
+	resp, err := handler.service.ActivateAccount(email)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	response := &pb.ActivateAccountResponse{
+		Message: resp,
+	}
+
+	return response, nil
+}
+
 func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Skill.Skill

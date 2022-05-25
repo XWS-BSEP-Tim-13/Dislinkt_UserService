@@ -149,6 +149,10 @@ service UserService{
     };
   }
 
+  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){
+
+  }
+
 }
 message ConnectionResponse{}
 
@@ -364,4 +368,12 @@ message RemoveInterestRequest {
 
 message RemoveInterestResponse {
   string companyId = 1;
+}
+
+message ActivateAccountRequest {
+  string email = 1;
+}
+
+message ActivateAccountResponse {
+  string message = 1;
 }

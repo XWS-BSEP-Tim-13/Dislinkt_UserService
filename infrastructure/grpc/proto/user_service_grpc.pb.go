@@ -44,6 +44,7 @@ type UserServiceClient interface {
 	RemoveSkill(ctx context.Context, in *RemoveSkillRequest, opts ...grpc.CallOption) (*RemoveSkillResponse, error)
 	RemoveInterest(ctx context.Context, in *RemoveInterestRequest, opts ...grpc.CallOption) (*RemoveInterestResponse, error)
 	GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
+	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
 
 type userServiceClient struct {
@@ -56,7 +57,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +66,7 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grp
 
 func (c *userServiceClient) GetByUsername(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveByUsername", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,7 @@ func (c *userServiceClient) GetByUsername(ctx context.Context, in *GetRequest, o
 
 func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetActiveByEmail", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByEmail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetRequest, opts
 
 func (c *userServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetAllActive", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -252,6 +253,15 @@ func (c *userServiceClient) GetConnectionUsernamesForUser(ctx context.Context, i
 	return out, nil
 }
 
+func (c *userServiceClient) ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error) {
+	out := new(ActivateAccountResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/ActivateAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -278,6 +288,7 @@ type UserServiceServer interface {
 	RemoveSkill(context.Context, *RemoveSkillRequest) (*RemoveSkillResponse, error)
 	RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error)
 	GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error)
+	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -286,16 +297,16 @@ type UnimplementedUserServiceServer struct {
 }
 
 func (UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveById not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedUserServiceServer) GetByUsername(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveByUsername not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetByUsername not implemented")
 }
 func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveByEmail not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
 }
 func (UnimplementedUserServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllActive not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *NewUser) (*NewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -351,6 +362,9 @@ func (UnimplementedUserServiceServer) RemoveInterest(context.Context, *RemoveInt
 func (UnimplementedUserServiceServer) GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionUsernamesForUser not implemented")
 }
+func (UnimplementedUserServiceServer) ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivateAccount not implemented")
+}
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -374,7 +388,7 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveById",
+		FullMethod: "/user.UserService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Get(ctx, req.(*GetRequest))
@@ -392,7 +406,7 @@ func _UserService_GetByUsername_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveByUsername",
+		FullMethod: "/user.UserService/GetByUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetByUsername(ctx, req.(*GetRequest))
@@ -410,7 +424,7 @@ func _UserService_GetByEmail_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetActiveByEmail",
+		FullMethod: "/user.UserService/GetByEmail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetByEmail(ctx, req.(*GetRequest))
@@ -428,7 +442,7 @@ func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetAllActive",
+		FullMethod: "/user.UserService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAll(ctx, req.(*GetAllRequest))
@@ -760,6 +774,24 @@ func _UserService_GetConnectionUsernamesForUser_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ActivateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivateAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ActivateAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/ActivateAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ActivateAccount(ctx, req.(*ActivateAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -768,19 +800,19 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetActiveById",
+			MethodName: "Get",
 			Handler:    _UserService_Get_Handler,
 		},
 		{
-			MethodName: "GetActiveByUsername",
+			MethodName: "GetByUsername",
 			Handler:    _UserService_GetByUsername_Handler,
 		},
 		{
-			MethodName: "GetActiveByEmail",
+			MethodName: "GetByEmail",
 			Handler:    _UserService_GetByEmail_Handler,
 		},
 		{
-			MethodName: "GetAllActive",
+			MethodName: "GetAll",
 			Handler:    _UserService_GetAll_Handler,
 		},
 		{
@@ -854,6 +886,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetConnectionUsernamesForUser",
 			Handler:    _UserService_GetConnectionUsernamesForUser_Handler,
+		},
+		{
+			MethodName: "ActivateAccount",
+			Handler:    _UserService_ActivateAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

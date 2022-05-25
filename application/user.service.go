@@ -225,3 +225,13 @@ func (service *UserService) GetByEmail(email string) (*domain.RegisteredUser, er
 	}
 	return user, nil
 }
+
+func (service *UserService) ActivateAccount(email string) (string, error) {
+	err := service.store.UpdateIsActive(email)
+	if err != nil {
+		err := errors.New("error activating account")
+		return "", err
+	}
+
+	return "Account successfully activated!", nil
+}

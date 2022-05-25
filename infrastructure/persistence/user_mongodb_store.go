@@ -67,6 +67,15 @@ func (store *UserMongoDBStore) Insert(user *domain.RegisteredUser) error {
 	return nil
 }
 
+func (store *UserMongoDBStore) UpdateIsActive(email string) error {
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"email": email},
+		bson.D{{"$set", bson.D{{"is_active", true}}}},
+	)
+	return err
+}
+
 func (store *UserMongoDBStore) DeleteAll() {
 	store.users.DeleteMany(context.TODO(), bson.D{{}})
 }
