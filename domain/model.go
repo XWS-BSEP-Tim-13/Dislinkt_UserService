@@ -11,8 +11,8 @@ type Education struct {
 	School       string             `bson:"school" validate:"required,alphaNumSigns"`
 	Degree       enum.Degree        `bson:"degree"`
 	FieldOfStudy string             `bson:"field_of_study" validate:"required,alphaNumSigns"`
-	StartDate    time.Time          `bson:"start_date"`
-	EndDate      time.Time          `bson:"end_date"`
+	StartDate    time.Time          `bson:"start_date" validate:"required"`
+	EndDate      time.Time          `bson:"end_date" validate:"required"`
 	Description  string             `bson:"description"`
 }
 
@@ -20,11 +20,11 @@ type Experience struct {
 	Id                 primitive.ObjectID  `bson:"_id"`
 	Title              string              `bson:"title" validate:"required,alphaNumSigns"`
 	EmploymentType     enum.EmploymentType `bson:"employment_type"`
-	CompanyName        string              `bson:"company_name" validate:"alphaNumSigns"`
+	CompanyName        string              `bson:"company_name" validate:"required,alphaNumSigns"`
 	Location           string              `bson:"location" validate:"alphaNumSigns"`
 	IsCurrentlyWorking bool                `bson:"is_currently_working"`
-	StartDate          time.Time           `bson:"start_date"`
-	EndDate            time.Time           `bson:"end_date"`
+	StartDate          time.Time           `bson:"start_date" validate:"required"`
+	EndDate            time.Time           `bson:"end_date" validate:"required"`
 	Industry           string              `bson:"industry" validate:"alphaNumSigns"`
 	Description        string              `bson:"description"`
 }
