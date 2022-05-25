@@ -29,12 +29,12 @@ func NewUserMongoDBStore(client *mongo.Client) domain.UserStore {
 }
 
 func (store *UserMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.RegisteredUser, error) {
-	filter := bson.M{"_id": id, "is_active": true}
+	filter := bson.M{"_id": id}
 	return store.filterOne(filter)
 }
 
 func (store *UserMongoDBStore) GetAllActive() ([]*domain.RegisteredUser, error) {
-	filter := bson.D{{"is_active", "true"}}
+	filter := bson.D{{"is_active", true}}
 	return store.filter(filter)
 }
 
