@@ -3,6 +3,7 @@ module github.com/XWS-BSEP-Tim-13/Dislinkt_UserService
 go 1.18
 
 require (
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 	github.com/opentracing/opentracing-go v1.2.0
 	go.mongodb.org/mongo-driver v1.9.1
@@ -14,7 +15,6 @@ require (
 require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
