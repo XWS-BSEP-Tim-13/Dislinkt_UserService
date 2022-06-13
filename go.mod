@@ -5,7 +5,10 @@ go 1.18
 require (
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
+	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/sirupsen/logrus v1.8.1
+	github.com/t-tomalak/logrus-easy-formatter v0.0.0-20190827215021-c074f06c5816
 	go.mongodb.org/mongo-driver v1.9.1
 	google.golang.org/genproto v0.0.0-20220504150022-98cd25cafc72
 	google.golang.org/grpc v1.46.0
@@ -30,4 +33,5 @@ require (
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

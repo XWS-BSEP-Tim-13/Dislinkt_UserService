@@ -25,6 +25,8 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 
+VOLUME /root/logs
+
 # Expose port 8000 to the outside world
 EXPOSE 8000
 

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
@@ -17,12 +18,14 @@ type UserHandler struct {
 	pb.UnimplementedUserServiceServer
 	service     *application.UserService
 	goValidator *util.GoValidator
+	logger      *logger.Logger
 }
 
-func NewUserHandler(service *application.UserService, goValidator *util.GoValidator) *UserHandler {
+func NewUserHandler(service *application.UserService, goValidator *util.GoValidator, logger *logger.Logger) *UserHandler {
 	return &UserHandler{
 		service:     service,
 		goValidator: goValidator,
+		logger:      logger,
 	}
 }
 

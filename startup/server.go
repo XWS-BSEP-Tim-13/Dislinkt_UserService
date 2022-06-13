@@ -1,12 +1,14 @@
 package startup
 
 import (
+	"context"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/api"
 	user "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/persistence"
+	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/startup/config"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	otgo "github.com/opentracing/opentracing-go"
@@ -30,13 +32,14 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (server *Server) Start() {
+	logger := logger.InitLogger("user-service", context.TODO())
+
 	mongoClient := server.initMongoClient()
 	userStore := server.initUserStore(mongoClient)
 	connectionsStore := server.initConnectionStore(mongoClient)
-	userService := server.initUserService(userStore, connectionsStore)
+	userService := server.initUserService(userStore, connectionsStore, logger)
 	goValidator := server.initGoValidator()
-
-	userHandler := server.initUserHandler(userService, goValidator)
+	userHandler := server.initUserHandler(userService, goValidator, logger)
 
 	server.startGrpcServer(userHandler)
 }
@@ -74,16 +77,16 @@ func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	return store
 }
 
-func (server *Server) initUserService(store domain.UserStore, conStore domain.ConnectionRequestStore) *application.UserService {
-	return application.NewUserService(store, conStore)
+func (server *Server) initUserService(store domain.UserStore, conStore domain.ConnectionRequestStore, logger *logger.Logger) *application.UserService {
+	return application.NewUserService(store, conStore, logger)
 }
 
 func (server *Server) initGoValidator() *util.GoValidator {
 	return util.NewGoValidator()
 }
 
-func (server *Server) initUserHandler(service *application.UserService, goValidator *util.GoValidator) *api.UserHandler {
-	return api.NewUserHandler(service, goValidator)
+func (server *Server) initUserHandler(service *application.UserService, goValidator *util.GoValidator, logger *logger.Logger) *api.UserHandler {
+	return api.NewUserHandler(service, goValidator, logger)
 }
 
 func (server *Server) startGrpcServer(userHandler *api.UserHandler) {

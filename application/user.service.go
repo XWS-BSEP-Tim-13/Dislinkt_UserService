@@ -3,22 +3,24 @@ package application
 import (
 	"errors"
 	"fmt"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
-
-	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserService struct {
 	store           domain.UserStore
 	connectionStore domain.ConnectionRequestStore
+	logger          *logger.Logger
 }
 
-func NewUserService(store domain.UserStore, connectionStore domain.ConnectionRequestStore) *UserService {
+func NewUserService(store domain.UserStore, connectionStore domain.ConnectionRequestStore, logger *logger.Logger) *UserService {
 	return &UserService{
 		store:           store,
 		connectionStore: connectionStore,
+		logger:          logger,
 	}
 }
 
