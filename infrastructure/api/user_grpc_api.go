@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/jwt"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
@@ -37,12 +38,14 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	}
 	user, err := handler.service.Get(objectId)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Get user by id")
 		return nil, err
 	}
 	userPb := mapUserToPB(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
+	handler.logger.InfoMessage("Action: Get user by id")
 	return response, nil
 }
 
@@ -50,6 +53,7 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 	filter := request.Filter
 	users, err := handler.service.FindByFilter(filter)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Filter user")
 		return nil, err
 	}
 	response := &pb.GetAllResponse{
@@ -59,10 +63,13 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
+
+	handler.logger.InfoMessage("Action: Filter user")
 	return response, nil
 }
 
 func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.GetRequest) (*pb.UserRequests, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
@@ -76,29 +83,35 @@ func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.
 		current := mapConnectionRequest(request)
 		response.Requests = append(response.Requests, current)
 	}
+	handler.logger.InfoMessage("User: " + username + " | Action: Get connection requests")
 	return response, nil
 }
 
 func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	connectionId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
 	handler.service.AcceptConnection(connectionId)
+	handler.logger.InfoMessage("User: " + username + " | Action: Accept connection request")
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	connectionId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
 	handler.service.DeleteConnectionRequest(connectionId)
+	handler.logger.InfoMessage("User: " + username + " | Action: Delete connection request")
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
 	fmt.Printf("Request: %s, id to: %s\n", request.Connection.IdFrom, request.Connection.IdTo)
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
 	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
@@ -107,32 +120,39 @@ func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.Co
 	}
 	err = handler.service.DeleteConnection(idFrom, idTo)
 	if err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Delete connection with id " + idTo.String())
 		return nil, err
 	}
+
+	handler.logger.InfoMessage("User: " + username + " | Action: Delete connection with id " + idTo.String())
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
 	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
 	if err != nil || err1 != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Create connection request to user with id " + idTo.String())
 		return nil, err
 	}
 	handler.service.RequestConnection(idFrom, idTo)
-	fmt.Printf("Returning to func")
+	handler.logger.InfoMessage("User: " + username + " | Action: Create connection request to user with id " + idTo.String())
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) GetConnectionUsernamesForUser(ctx context.Context, request *pb.UserUsername) (*pb.UserConnectionUsernames, error) {
-	fmt.Printf("Username: %s\n", request.Username)
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	connUsernames, err := handler.service.GetConnectionUsernamesForUser(request.Username)
 	response := &pb.UserConnectionUsernames{
 		Usernames: connUsernames,
 	}
 	if err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Get connection usernames for user " + request.Username)
 		return nil, err
 	}
+	handler.logger.InfoMessage("User: " + username + " | Action: Get connection usernames for user " + request.Username)
 	return response, nil
 }
 
@@ -157,6 +177,7 @@ func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Get users")
 		return nil, err
 	}
 	response := &pb.GetAllResponse{
@@ -167,10 +188,13 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 		current := mapUserToPB(user)
 		response.Users = append(response.Users, current)
 	}
+
+	handler.logger.InfoMessage("Action: Get users")
 	return response, nil
 }
 
 func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UserInfoUpdate) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	id, _ := primitive.ObjectIDFromHex(request.UserInfo.Id)
 	userInfo := dto.NewUserInfo(id, request.UserInfo.FirstName, request.UserInfo.LastName, enum.Gender(request.UserInfo.Gender), request.UserInfo.DateOfBirth.AsTime(),
 		request.UserInfo.Email, request.UserInfo.PhoneNumber, request.UserInfo.Biography)
@@ -179,6 +203,7 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 	validationErr := handler.goValidator.Validator.Struct(user)
 	if validationErr != nil {
 		handler.goValidator.PrintValidationErrors(validationErr)
+		handler.logger.WarningMessage("User: " + username + " | Action: Update personal info with invalid data")
 		return nil, status.Error(500, validationErr.Error())
 	}
 
@@ -186,19 +211,22 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 	response.Id = request.UserInfo.Id
 
 	if _, err := handler.service.UpdatePersonalInfo(user); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Update personal info")
 		return nil, err
 	}
-
+	handler.logger.InfoMessage("User: " + username + " | Action: Update personal info")
 	return response, nil
 }
 
 func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.ExperienceUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.ExperienceUpdate.UserId
 	exp := mapExperience(request.ExperienceUpdate.Experience)
 
 	validationErr := handler.goValidator.Validator.Struct(exp)
 	if validationErr != nil {
+		handler.logger.WarningMessage("User: " + username + " | Action: Add experience")
 		handler.goValidator.PrintValidationErrors(validationErr)
 		return nil, status.Error(500, validationErr.Error())
 	}
@@ -206,13 +234,16 @@ func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.Exper
 	expId, _ := primitive.ObjectIDFromHex(request.ExperienceUpdate.UserId)
 
 	if err := handler.service.AddExperience(exp, expId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Add experience")
 		return nil, err
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Add experience")
 	return response, nil
 }
 
 func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.EducationUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.EducationUpdate.UserId
 	education := mapEducation(request.EducationUpdate.Education)
@@ -220,15 +251,18 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 	validationErr := handler.goValidator.Validator.Struct(education)
 	if validationErr != nil {
 		handler.goValidator.PrintValidationErrors(validationErr)
+		handler.logger.WarningMessage("User: " + username + " | Action: Add education")
 		return nil, status.Error(500, validationErr.Error())
 	}
 
 	expId, _ := primitive.ObjectIDFromHex(request.EducationUpdate.UserId)
 
 	if err := handler.service.AddEducation(education, expId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Add education")
 		return nil, err
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Add education")
 	return response, nil
 }
 
@@ -238,11 +272,13 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 
 	err := handler.goValidator.Validator.Struct(user)
 	if err != nil {
+		handler.logger.WarningMessage("Action: Create user with invalid data")
 		return nil, status.Error(500, err.Error())
 	}
 
 	newUser, err := handler.service.CreateNewUser(user)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Create user")
 		return nil, status.Error(400, err.Error())
 	}
 
@@ -250,6 +286,7 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 		User: mapUserToPB(newUser),
 	}
 
+	handler.logger.InfoMessage("Action: Create user")
 	return response, nil
 }
 
@@ -258,6 +295,7 @@ func (handler *UserHandler) ActivateAccount(ctx context.Context, request *pb.Act
 
 	resp, err := handler.service.ActivateAccount(email)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Activate account " + email)
 		return nil, status.Error(500, err.Error())
 	}
 
@@ -265,10 +303,12 @@ func (handler *UserHandler) ActivateAccount(ctx context.Context, request *pb.Act
 		Message: resp,
 	}
 
+	handler.logger.InfoMessage("Action: Activate account " + email)
 	return response, nil
 }
 
 func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Skill.Skill
 	userId, _ := primitive.ObjectIDFromHex(request.Skill.UserId)
@@ -276,23 +316,28 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 	validationErr := handler.goValidator.ValidateSkill(request.Skill.Skill)
 	if validationErr != nil {
 		handler.goValidator.PrintValidationErrors(validationErr)
+		handler.logger.WarningMessage("User: " + username + " | Action: Add skill " + request.Skill.Skill)
 		return nil, status.Error(500, validationErr.Error())
 	}
 
 	if err := handler.service.AddSkill(request.Skill.Skill, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Add skill " + request.Skill.Skill)
 		return nil, err
 	}
+	handler.logger.InfoMessage("User: " + username + " | Action: Add skill " + request.Skill.Skill)
 
 	return response, nil
 }
 
 func (handler *UserHandler) RemoveSkill(ctx context.Context, request *pb.RemoveSkillRequest) (*pb.RemoveSkillResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	userId, err := primitive.ObjectIDFromHex(request.Skill.UserId)
 	if err != nil {
 		return nil, status.Error(500, "Error parsing id.")
 	}
 
 	if err := handler.service.RemoveSkill(request.Skill.Skill, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Remove skill " + request.Skill.Skill)
 		return nil, err
 	}
 
@@ -300,46 +345,57 @@ func (handler *UserHandler) RemoveSkill(ctx context.Context, request *pb.RemoveS
 		Skill: request.Skill.Skill,
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Remove skill " + request.Skill.Skill)
 	return response, nil
 }
 
 func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.InterestsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Interest.CompanyId
 	userId, _ := primitive.ObjectIDFromHex(request.Interest.UserId)
 	companyId, _ := primitive.ObjectIDFromHex(request.Interest.CompanyId)
 	if err := handler.service.AddInterest(companyId, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Add interest ")
 		return nil, err
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Add interest ")
 	return response, nil
 }
 
 func (handler *UserHandler) DeleteExperience(ctx context.Context, request *pb.DeleteExperienceRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.DeleteExperience.ExperienceId
 	userId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.UserId)
 	experienceId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.ExperienceId)
 	if err := handler.service.DeleteExperience(experienceId, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Delete experience ")
 		return nil, err
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Delete experience ")
 	return response, nil
 }
 
 func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.DeleteEducationRequest) (*pb.UserInfoUpdateResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.DeleteEducation.EducationId
 	userId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.UserId)
 	educationId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.EducationId)
 	if err := handler.service.DeleteEducation(educationId, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Delete education ")
 		return nil, err
 	}
 
+	handler.logger.InfoMessage("User: " + username + " | Action: Delete education ")
 	return response, nil
 }
 
 func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.RemoveInterestRequest) (*pb.RemoveInterestResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	userId, err := primitive.ObjectIDFromHex(request.Interest.UserId)
 	companyId, err := primitive.ObjectIDFromHex(request.Interest.CompanyId)
 	if err != nil {
@@ -347,12 +403,15 @@ func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.Remo
 	}
 
 	if err := handler.service.RemoveInterest(companyId, userId); err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: Delete interest ")
 		return nil, err
 	}
 
 	response := &pb.RemoveInterestResponse{
 		CompanyId: request.Interest.CompanyId,
 	}
+
+	handler.logger.InfoMessage("User: " + username + " | Action: Delete interest ")
 	return response, nil
 }
 
@@ -360,12 +419,15 @@ func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRe
 	username := request.Id
 	user, err := handler.service.GetByUsername(username)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Get user by username: " + username + " - Not found")
 		return nil, err
 	}
 	userPb := mapUserToPB(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
+
+	handler.logger.InfoMessage("Action: Get user by username: " + username)
 	return response, nil
 }
 
@@ -373,11 +435,14 @@ func (handler *UserHandler) GetByEmail(ctx context.Context, request *pb.GetReque
 	username := request.Id
 	user, err := handler.service.GetByEmail(username)
 	if err != nil {
+		handler.logger.ErrorMessage("Action: Get user by email: " + username + " - Not found")
 		return nil, err
 	}
 	userPb := mapUserToPB(user)
 	response := &pb.GetResponse{
 		User: userPb,
 	}
+
+	handler.logger.InfoMessage("Action: Get user by email: " + username)
 	return response, nil
 }

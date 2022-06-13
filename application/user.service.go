@@ -129,7 +129,6 @@ func (service *UserService) DeleteConnectionRequest(connectionId primitive.Objec
 
 func (service *UserService) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
 	resp, err := service.connectionStore.GetRequestsForUser(id)
-	fmt.Printf("Response %d\n", len(resp))
 	return resp, err
 }
 
