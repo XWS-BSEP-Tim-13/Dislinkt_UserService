@@ -26,6 +26,7 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 VOLUME /root/logs
+VOLUME /root/cert
 
 # Expose port 8000 to the outside world
 EXPOSE 8000
