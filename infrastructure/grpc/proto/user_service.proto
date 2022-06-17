@@ -143,11 +143,7 @@ service UserService{
     };
   }
 
-  rpc GetConnectionUsernamesForUser(UserUsername) returns(UserConnectionUsernames){
-    option(google.api.http) = {
-      get: "/user/user-connection-usernames/{username}",
-    };
-  }
+  rpc GetConnectionUsernamesForUser(UserUsername) returns(UserConnectionUsernames){}
 
   rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){
 
