@@ -54,6 +54,7 @@ func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) e
 func (service *UserService) GetConnectionUsernamesForUser(username string) ([]string, error) {
 	user, err := service.store.GetActiveByUsername(username)
 	if err != nil {
+		fmt.Println("Active error")
 		return nil, err
 	}
 	var retVal []string
