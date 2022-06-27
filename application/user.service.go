@@ -237,3 +237,7 @@ func (service *UserService) ActivateAccount(email string) (string, error) {
 
 	return "Account successfully activated!", nil
 }
+
+func (service *UserService) ChangeAccountPrivacy(username string, isPrivate bool) error {
+	return service.store.ChangeAccountPrivacy(isPrivate, username)
+}

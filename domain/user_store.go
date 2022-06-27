@@ -23,4 +23,5 @@ type UserStore interface {
 	DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error
 	DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error
 	RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error
+	ChangeAccountPrivacy(isPrivate bool, username string) error
 }

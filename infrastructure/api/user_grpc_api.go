@@ -142,9 +142,15 @@ func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.C
 	return new(pb.ConnectionResponse), nil
 }
 
-func (handler *UserHandler) GetConnectionUsernamesForUser(ctx context.Context, request *pb.UserUsername) (*pb.UserConnectionUsernames, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	//username := request.Username
+func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
+	username, err := jwt.ExtractUsernameFromToken(ctx)
+	if err != nil {
+		var connUsernames []string
+		response := &pb.UserConnectionUsernames{
+			Usernames: connUsernames,
+		}
+		return response, nil
+	}
 	fmt.Println("Conn username", username)
 	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
 	response := &pb.UserConnectionUsernames{
@@ -158,18 +164,16 @@ func (handler *UserHandler) GetConnectionUsernamesForUser(ctx context.Context, r
 	return response, nil
 }
 
-func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	fmt.Println("Conn username", username)
-	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
-	response := &pb.UserConnectionUsernames{
-		Usernames: connUsernames,
-	}
+func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, requst *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
+	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
-		handler.logger.ErrorMessage("User: " + username + " | Action: GCU/" + username)
 		return nil, err
 	}
-	handler.logger.InfoMessage("User: " + username + " | Action: GCU/" + username)
+	err = handler.service.ChangeAccountPrivacy(username, requst.IsReadable)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.ConnectionResponse{}
 	return response, nil
 }
 

@@ -148,9 +148,11 @@ service UserService{
       get: "/user/connections/all",
     };
   }
-
-  rpc GetConnectionUsernamesForUser(UserUsername) returns(UserConnectionUsernames){}
-
+  rpc ChangeAccountPrivacy(ReadPostsResponse) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/account-privacy/isReadable",
+    };
+  }
 
   rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
 

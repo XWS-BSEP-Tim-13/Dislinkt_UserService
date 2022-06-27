@@ -44,7 +44,7 @@ type UserServiceClient interface {
 	RemoveSkill(ctx context.Context, in *RemoveSkillRequest, opts ...grpc.CallOption) (*RemoveSkillResponse, error)
 	RemoveInterest(ctx context.Context, in *RemoveInterestRequest, opts ...grpc.CallOption) (*RemoveInterestResponse, error)
 	GetUsernames(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
-	GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
+	ChangeAccountPrivacy(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
 
@@ -254,9 +254,9 @@ func (c *userServiceClient) GetUsernames(ctx context.Context, in *ConnectionResp
 	return out, nil
 }
 
-func (c *userServiceClient) GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error) {
-	out := new(UserConnectionUsernames)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetConnectionUsernamesForUser", in, out, opts...)
+func (c *userServiceClient) ChangeAccountPrivacy(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error) {
+	out := new(ConnectionResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/ChangeAccountPrivacy", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -298,7 +298,7 @@ type UserServiceServer interface {
 	RemoveSkill(context.Context, *RemoveSkillRequest) (*RemoveSkillResponse, error)
 	RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error)
 	GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error)
-	GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error)
+	ChangeAccountPrivacy(context.Context, *ReadPostsResponse) (*ConnectionResponse, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -373,8 +373,8 @@ func (UnimplementedUserServiceServer) RemoveInterest(context.Context, *RemoveInt
 func (UnimplementedUserServiceServer) GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsernames not implemented")
 }
-func (UnimplementedUserServiceServer) GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionUsernamesForUser not implemented")
+func (UnimplementedUserServiceServer) ChangeAccountPrivacy(context.Context, *ReadPostsResponse) (*ConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeAccountPrivacy not implemented")
 }
 func (UnimplementedUserServiceServer) ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivateAccount not implemented")
@@ -788,20 +788,20 @@ func _UserService_GetUsernames_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetConnectionUsernamesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserUsername)
+func _UserService_ChangeAccountPrivacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadPostsResponse)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetConnectionUsernamesForUser(ctx, in)
+		return srv.(UserServiceServer).ChangeAccountPrivacy(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/GetConnectionUsernamesForUser",
+		FullMethod: "/user.UserService/ChangeAccountPrivacy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetConnectionUsernamesForUser(ctx, req.(*UserUsername))
+		return srv.(UserServiceServer).ChangeAccountPrivacy(ctx, req.(*ReadPostsResponse))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -920,8 +920,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUsernames_Handler,
 		},
 		{
-			MethodName: "GetConnectionUsernamesForUser",
-			Handler:    _UserService_GetConnectionUsernamesForUser_Handler,
+			MethodName: "ChangeAccountPrivacy",
+			Handler:    _UserService_ChangeAccountPrivacy_Handler,
 		},
 		{
 			MethodName: "ActivateAccount",

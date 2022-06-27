@@ -178,6 +178,18 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 	return err
 }
 
+func (store *UserMongoDBStore) ChangeAccountPrivacy(isPrivate bool, username string) error {
+	user, _ := store.GetByUsername(username)
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": user.Id},
+		bson.D{
+			{"$set", bson.D{{"is_private", isPrivate}}},
+		},
+	)
+	return err
+}
+
 func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
 	user, _ := store.GetActiveById(userId)
 	skillExists := util.ContainsStr(user.Skills, skill)
