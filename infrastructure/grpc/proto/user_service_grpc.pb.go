@@ -43,6 +43,7 @@ type UserServiceClient interface {
 	DeleteEducation(ctx context.Context, in *DeleteEducationRequest, opts ...grpc.CallOption) (*UserInfoUpdateResponse, error)
 	RemoveSkill(ctx context.Context, in *RemoveSkillRequest, opts ...grpc.CallOption) (*RemoveSkillResponse, error)
 	RemoveInterest(ctx context.Context, in *RemoveInterestRequest, opts ...grpc.CallOption) (*RemoveInterestResponse, error)
+	GetUsernames(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
 	GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
@@ -244,6 +245,15 @@ func (c *userServiceClient) RemoveInterest(ctx context.Context, in *RemoveIntere
 	return out, nil
 }
 
+func (c *userServiceClient) GetUsernames(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*UserConnectionUsernames, error) {
+	out := new(UserConnectionUsernames)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetUsernames", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetConnectionUsernamesForUser(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*UserConnectionUsernames, error) {
 	out := new(UserConnectionUsernames)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetConnectionUsernamesForUser", in, out, opts...)
@@ -287,6 +297,7 @@ type UserServiceServer interface {
 	DeleteEducation(context.Context, *DeleteEducationRequest) (*UserInfoUpdateResponse, error)
 	RemoveSkill(context.Context, *RemoveSkillRequest) (*RemoveSkillResponse, error)
 	RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error)
+	GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error)
 	GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -358,6 +369,9 @@ func (UnimplementedUserServiceServer) RemoveSkill(context.Context, *RemoveSkillR
 }
 func (UnimplementedUserServiceServer) RemoveInterest(context.Context, *RemoveInterestRequest) (*RemoveInterestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveInterest not implemented")
+}
+func (UnimplementedUserServiceServer) GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsernames not implemented")
 }
 func (UnimplementedUserServiceServer) GetConnectionUsernamesForUser(context.Context, *UserUsername) (*UserConnectionUsernames, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionUsernamesForUser not implemented")
@@ -756,6 +770,24 @@ func _UserService_RemoveInterest_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUsernames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionResponse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUsernames(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetUsernames",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUsernames(ctx, req.(*ConnectionResponse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetConnectionUsernamesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserUsername)
 	if err := dec(in); err != nil {
@@ -882,6 +914,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveInterest",
 			Handler:    _UserService_RemoveInterest_Handler,
+		},
+		{
+			MethodName: "GetUsernames",
+			Handler:    _UserService_GetUsernames_Handler,
 		},
 		{
 			MethodName: "GetConnectionUsernamesForUser",

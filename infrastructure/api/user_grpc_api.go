@@ -143,8 +143,23 @@ func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.C
 }
 
 func (handler *UserHandler) GetConnectionUsernamesForUser(ctx context.Context, request *pb.UserUsername) (*pb.UserConnectionUsernames, error) {
-	//username, _ := jwt.ExtractUsernameFromToken(ctx)
-	username := request.Username
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
+	//username := request.Username
+	fmt.Println("Conn username", username)
+	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
+	response := &pb.UserConnectionUsernames{
+		Usernames: connUsernames,
+	}
+	if err != nil {
+		handler.logger.ErrorMessage("User: " + username + " | Action: GCU/" + username)
+		return nil, err
+	}
+	handler.logger.InfoMessage("User: " + username + " | Action: GCU/" + username)
+	return response, nil
+}
+
+func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	fmt.Println("Conn username", username)
 	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
 	response := &pb.UserConnectionUsernames{
