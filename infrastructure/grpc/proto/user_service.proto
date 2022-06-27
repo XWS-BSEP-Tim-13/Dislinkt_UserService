@@ -150,7 +150,7 @@ service UserService{
   }
   rpc ChangeAccountPrivacy(ReadPostsResponse) returns(ConnectionResponse){
     option(google.api.http) = {
-      put: "/user/account-privacy/isReadable",
+      put: "/user/account-privacy/{isReadable}",
     };
   }
 

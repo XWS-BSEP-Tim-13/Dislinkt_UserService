@@ -873,19 +873,25 @@ func local_request_UserService_GetUsernames_0(ctx context.Context, marshaler run
 
 }
 
-var (
-	filter_UserService_ChangeAccountPrivacy_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_UserService_ChangeAccountPrivacy_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ReadPostsResponse
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["isReadable"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "isReadable")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_ChangeAccountPrivacy_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.IsReadable, err = runtime.Bool(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "isReadable", err)
 	}
 
 	msg, err := client.ChangeAccountPrivacy(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -897,11 +903,21 @@ func local_request_UserService_ChangeAccountPrivacy_0(ctx context.Context, marsh
 	var protoReq ReadPostsResponse
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["isReadable"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "isReadable")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_ChangeAccountPrivacy_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.IsReadable, err = runtime.Bool(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "isReadable", err)
 	}
 
 	msg, err := server.ChangeAccountPrivacy(ctx, &protoReq)
@@ -1426,7 +1442,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.UserService/ChangeAccountPrivacy", runtime.WithHTTPPathPattern("/user/account-privacy/isReadable"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/user.UserService/ChangeAccountPrivacy", runtime.WithHTTPPathPattern("/user/account-privacy/{isReadable}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1930,7 +1946,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/user.UserService/ChangeAccountPrivacy", runtime.WithHTTPPathPattern("/user/account-privacy/isReadable"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/user.UserService/ChangeAccountPrivacy", runtime.WithHTTPPathPattern("/user/account-privacy/{isReadable}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1992,7 +2008,7 @@ var (
 
 	pattern_UserService_GetUsernames_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"user", "connections", "all"}, ""))
 
-	pattern_UserService_ChangeAccountPrivacy_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"user", "account-privacy", "isReadable"}, ""))
+	pattern_UserService_ChangeAccountPrivacy_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"user", "account-privacy", "isReadable"}, ""))
 )
 
 var (
