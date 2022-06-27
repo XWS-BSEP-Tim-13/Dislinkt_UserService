@@ -145,9 +145,7 @@ service UserService{
 
   rpc GetConnectionUsernamesForUser(UserUsername) returns(UserConnectionUsernames){}
 
-  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){
-
-  }
+  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
 
 }
 message ConnectionResponse{}
