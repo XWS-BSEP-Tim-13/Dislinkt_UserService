@@ -164,12 +164,13 @@ func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.Connec
 	return response, nil
 }
 
-func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, requst *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
+func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
+	fmt.Println("Change privacy begun")
 	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	err = handler.service.ChangeAccountPrivacy(username, requst.IsReadable)
+	err = handler.service.ChangeAccountPrivacy(username, request.IsReadable)
 	if err != nil {
 		return nil, err
 	}
