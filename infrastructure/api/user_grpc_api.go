@@ -168,6 +168,7 @@ func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *p
 	fmt.Println("Change privacy begun")
 	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	err = handler.service.ChangeAccountPrivacy(username, request.IsReadable)
