@@ -6,6 +6,7 @@ import (
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 	easy "github.com/t-tomalak/logrus-easy-formatter"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -38,13 +39,13 @@ func InitLoggerPerLevel(logFile string) *logrus.Logger {
 	}
 
 	logger := logrus.New()
-	logger.SetOutput(&lumberjack.Logger{
+	logger.SetOutput(io.MultiWriter(&lumberjack.Logger{
 		Filename:   file.Name(),
 		MaxSize:    100, // megabytes
 		MaxBackups: 3,
 		MaxAge:     30,   //days
 		Compress:   true, // disabled by default
-	})
+	}, os.Stdout))
 
 	logger.SetFormatter(&easy.Formatter{
 		TimestampFormat: "2006-01-02 15:04:05",
