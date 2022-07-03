@@ -47,7 +47,8 @@ func (server *Server) Start() {
 	mongoClient := server.initMongoClient()
 	userStore := server.initUserStore(mongoClient)
 	connectionsStore := server.initConnectionStore(mongoClient)
-	userService := server.initUserService(userStore, connectionsStore, logger)
+	notificationStore := server.initNotificationStore(mongoClient)
+	userService := server.initUserService(userStore, connectionsStore, logger, notificationStore)
 	goValidator := server.initGoValidator()
 	userHandler := server.initUserHandler(userService, goValidator, logger)
 
@@ -75,6 +76,19 @@ func (server *Server) initConnectionStore(client *mongo.Client) domain.Connectio
 	return store
 }
 
+func (server *Server) initNotificationStore(client *mongo.Client) domain.NotificationStore {
+	store := persistence.NewNotificationMongoDBStore(client)
+	store.DeleteAll()
+
+	for _, connection := range notifications {
+		err := store.Insert(connection)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return store
+}
+
 func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	store := persistence.NewUserMongoDBStore(client)
 	store.DeleteAll()
@@ -87,8 +101,8 @@ func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	return store
 }
 
-func (server *Server) initUserService(store domain.UserStore, conStore domain.ConnectionRequestStore, logger *logger.Logger) *application.UserService {
-	return application.NewUserService(store, conStore, logger)
+func (server *Server) initUserService(store domain.UserStore, conStore domain.ConnectionRequestStore, logger *logger.Logger, notificationStore domain.NotificationStore) *application.UserService {
+	return application.NewUserService(store, conStore, logger, notificationStore)
 }
 
 func (server *Server) initGoValidator() *util.GoValidator {

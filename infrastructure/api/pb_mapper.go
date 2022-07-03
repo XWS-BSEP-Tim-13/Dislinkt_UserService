@@ -6,6 +6,7 @@ import (
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 func mapUserToPB(user *domain.RegisteredUser) *pb.User {
@@ -58,7 +59,7 @@ func mapUserToPB(user *domain.RegisteredUser) *pb.User {
 	}
 
 	for _, connection := range user.Connections {
-		userPb.Connections = append(userPb.Connections, connection.Hex())
+		userPb.Connections = append(userPb.Connections, connection)
 	}
 
 	return userPb
@@ -136,16 +137,32 @@ func mapUserToDomain(userPb *pb.User) *domain.RegisteredUser {
 		user.Interests = append(user.Interests, interestId)
 	}
 
-	user.Connections = []primitive.ObjectID{}
+	user.Connections = []string{}
 	for _, connection := range (*userPb).Connections {
-		connectionId, err := primitive.ObjectIDFromHex(connection)
-		if err != nil {
-			continue
-		}
-		user.Connections = append(user.Connections, connectionId)
+		user.Connections = append(user.Connections, connection)
 	}
 
 	return user
+}
+
+func mapNotificationToPB(request *domain.Notification) *pb.Notification {
+	notificationPb := &pb.Notification{
+		Id:       request.Id.Hex(),
+		Username: request.Username,
+		Created:  timestamppb.New(request.Created),
+		Type:     pb.NotificationType(request.NotificationType),
+	}
+	return notificationPb
+}
+
+func mapPbToNotificationDomain(request *pb.NotificationDto) *domain.Notification {
+	notification := &domain.Notification{
+		Id:               primitive.NewObjectID(),
+		Created:          time.Now(),
+		Username:         request.Username,
+		NotificationType: enum.NotificationType(request.Type),
+	}
+	return notification
 }
 
 func mapConnectionRequest(request *domain.ConnectionRequest) *pb.ConnectionRequest {

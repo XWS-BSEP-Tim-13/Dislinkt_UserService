@@ -87,82 +87,27 @@ func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.
 	return response, nil
 }
 
-func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	connectionId, err := primitive.ObjectIDFromHex(request.Id)
-	if err != nil {
-		return nil, err
-	}
-	handler.service.AcceptConnection(connectionId)
-	handler.logger.InfoMessage("User: " + username + " | Action: ACR")
-	return new(pb.ConnectionResponse), nil
-}
-
-func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	connectionId, err := primitive.ObjectIDFromHex(request.Id)
-	if err != nil {
-		return nil, err
-	}
-	handler.service.DeleteConnectionRequest(connectionId)
-	handler.logger.InfoMessage("User: " + username + " | Action: DCR")
-	return new(pb.ConnectionResponse), nil
-}
-
-func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
-	fmt.Printf("Request: %s, id to: %s\n", request.Connection.IdFrom, request.Connection.IdTo)
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
-	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
-	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
-	if err != nil || err1 != nil {
-		return nil, err
-	}
-	err = handler.service.DeleteConnection(idFrom, idTo)
-	if err != nil {
-		handler.logger.ErrorMessage("User: " + username + " | Action: DC/: " + idTo.String())
-		return nil, err
-	}
-
-	handler.logger.InfoMessage("User: " + username + " | Action: DC/: " + idTo.String())
-	return new(pb.ConnectionResponse), nil
-}
-
-func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
-	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
-	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
-	if err != nil || err1 != nil {
-		handler.logger.ErrorMessage("User: " + username + " | Action: CCR/: " + idTo.String())
-		return nil, err
-	}
-	handler.service.RequestConnection(idFrom, idTo)
-	handler.logger.InfoMessage("User: " + username + " | Action: CCR/: " + idTo.String())
-	return new(pb.ConnectionResponse), nil
-}
-
-func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
-	username, err := jwt.ExtractUsernameFromToken(ctx)
-	if err != nil {
-		var connUsernames []string
-		response := &pb.UserConnectionUsernames{
-			Usernames: connUsernames,
-		}
-		return response, nil
-	}
-	fmt.Println("Conn username", username)
-	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
-	response := &pb.UserConnectionUsernames{
-		Usernames: connUsernames,
-	}
-	if err != nil {
-		handler.logger.ErrorMessage("User: " + username + " | Action: GCU/" + username)
-		return nil, err
-	}
-	handler.logger.InfoMessage("User: " + username + " | Action: GCU/" + username)
-	return response, nil
-}
+//func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
+//	username, err := jwt.ExtractUsernameFromToken(ctx)
+//	if err != nil {
+//		var connUsernames []string
+//		response := &pb.UserConnectionUsernames{
+//			Usernames: connUsernames,
+//		}
+//		return response, nil
+//	}
+//	fmt.Println("Conn username", username)
+//	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
+//	response := &pb.UserConnectionUsernames{
+//		Usernames: connUsernames,
+//	}
+//	if err != nil {
+//		handler.logger.ErrorMessage("User: " + username + " | Action: GCU/" + username)
+//		return nil, err
+//	}
+//	handler.logger.InfoMessage("User: " + username + " | Action: GCU/" + username)
+//	return response, nil
+//}
 
 func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
 	fmt.Println("Change privacy begun")
@@ -176,24 +121,6 @@ func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *p
 		return nil, err
 	}
 	response := &pb.ConnectionResponse{}
-	return response, nil
-}
-
-func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request *pb.ConnectionBody) (*pb.ReadPostsResponse, error) {
-	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
-	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
-	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
-	if err != nil || err1 != nil {
-		return nil, err
-	}
-	isReadable, err1 := handler.service.CheckIfUserCanReadPosts(idFrom, idTo)
-
-	if err1 != nil {
-		return nil, err
-	}
-	response := &pb.ReadPostsResponse{
-		IsReadable: isReadable,
-	}
 	return response, nil
 }
 
@@ -286,6 +213,30 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 	}
 
 	handler.logger.InfoMessage("User: " + username + " | Action: AEdu")
+	return response, nil
+}
+
+func (handler *UserHandler) GetNotificationsForUser(ctx context.Context, request *pb.ConnectionResponse) (*pb.NotificationResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
+	notifications, err := handler.service.GetNotificationsForUser(username)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.NotificationResponse{
+		Notification: []*pb.Notification{},
+	}
+
+	for _, notification := range notifications {
+		current := mapNotificationToPB(notification)
+		response.Notification = append(response.Notification, current)
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.NotificationRequest) (*pb.ConnectionResponse, error) {
+	notification := mapPbToNotificationDomain(request.Notification)
+	handler.service.SaveNotification(notification)
+	response := &pb.ConnectionResponse{}
 	return response, nil
 }
 

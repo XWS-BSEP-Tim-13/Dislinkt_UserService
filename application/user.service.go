@@ -2,25 +2,25 @@ package application
 
 import (
 	"errors"
-	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
-	"time"
 )
 
 type UserService struct {
-	store           domain.UserStore
-	connectionStore domain.ConnectionRequestStore
-	logger          *logger.Logger
+	store             domain.UserStore
+	connectionStore   domain.ConnectionRequestStore
+	logger            *logger.Logger
+	notificationStore domain.NotificationStore
 }
 
-func NewUserService(store domain.UserStore, connectionStore domain.ConnectionRequestStore, logger *logger.Logger) *UserService {
+func NewUserService(store domain.UserStore, connectionStore domain.ConnectionRequestStore, logger *logger.Logger, notificationStore domain.NotificationStore) *UserService {
 	return &UserService{
-		store:           store,
-		connectionStore: connectionStore,
-		logger:          logger,
+		store:             store,
+		connectionStore:   connectionStore,
+		logger:            logger,
+		notificationStore: notificationStore,
 	}
 }
 
@@ -28,101 +28,21 @@ func (service *UserService) Get(id primitive.ObjectID) (*domain.RegisteredUser, 
 	return service.store.GetActiveById(id)
 }
 
-func (service *UserService) RequestConnection(idFrom, idTo primitive.ObjectID) error {
-	toUser, err := service.store.GetActiveById(idTo)
-	fromUser, _ := service.store.GetActiveById(idFrom)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("In service trace: \n")
-	if toUser.IsPrivate {
-		var request = domain.ConnectionRequest{
-			Id:          primitive.NewObjectID(),
-			From:        *fromUser,
-			To:          *toUser,
-			RequestTime: time.Now(),
-		}
-		service.connectionStore.Insert(&request)
-	} else {
-		toUser.Connections = append(toUser.Connections, idFrom)
-		service.store.Update(toUser)
-	}
-	fmt.Printf("Saved to db: \n")
-	return nil
-}
-
-func (service *UserService) GetConnectionUsernamesForUser(username string) ([]string, error) {
-	user, err := service.store.GetActiveByUsername(username)
-	if err != nil {
-		fmt.Println("Active error")
-		return nil, err
-	}
-	var retVal []string
-	for _, conId := range user.Connections {
-		conUser, _ := service.store.GetActiveById(conId)
-		retVal = append(retVal, conUser.Username)
-		fmt.Printf("Username : %s\n", conUser.Username)
-	}
-	retVal = append(retVal, username)
-	return retVal, nil
-}
-
-func (service *UserService) CheckIfUserCanReadPosts(idFrom, idTo primitive.ObjectID) (bool, error) {
-	toUser, err := service.store.GetActiveById(idTo)
-	if err != nil {
-		return false, err
-	}
-	if !toUser.IsPrivate {
-		return true, nil
-	}
-	for _, conId := range toUser.Connections {
-		if conId == idFrom {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-func (service *UserService) AcceptConnection(connectionId primitive.ObjectID) error {
-	connection, err := service.connectionStore.Get(connectionId)
-	if err != nil {
-		return err
-	}
-	connection.To.Connections = append(connection.To.Connections, connection.From.Id)
-	fmt.Printf("Saved connection %s \n", connection.To.Connections)
-	err1 := service.store.Update(&connection.To)
-	if err != nil {
-		return err1
-	}
-	service.connectionStore.Delete(connectionId)
-	return nil
-}
-
-func (service *UserService) DeleteConnection(idFrom, idTo primitive.ObjectID) error {
-	user, err := service.store.GetActiveById(idTo)
-	if err != nil {
-		return err
-	}
-	indx := -1
-	for i, connection := range user.Connections {
-		fmt.Printf("Saved connection %s \n", connection)
-		if connection == idFrom {
-			indx = i
-			break
-		}
-	}
-	fmt.Printf("Index %d \n", indx)
-	if indx == -1 {
-		return nil
-	}
-	user.Connections[indx] = user.Connections[len(user.Connections)-1]
-	user.Connections = user.Connections[:len(user.Connections)-1]
-	err = service.store.Update(user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+//func (service *UserService) GetConnectionUsernamesForUser(username string) ([]string, error) {
+//	user, err := service.store.GetActiveByUsername(username)
+//	if err != nil {
+//		fmt.Println("Active error")
+//		return nil, err
+//	}
+//	var retVal []string
+//	for _, conId := range user.Connections {
+//		conUser, _ := service.store.GetActiveById(conId)
+//		retVal = append(retVal, conUser.Username)
+//		fmt.Printf("Username : %s\n", conUser.Username)
+//	}
+//	retVal = append(retVal, username)
+//	return retVal, nil
+//}
 
 func (service *UserService) DeleteConnectionRequest(connectionId primitive.ObjectID) {
 	service.connectionStore.Delete(connectionId)
@@ -240,4 +160,25 @@ func (service *UserService) ActivateAccount(email string) (string, error) {
 
 func (service *UserService) ChangeAccountPrivacy(username string, isPrivate bool) error {
 	return service.store.ChangeAccountPrivacy(isPrivate, username)
+}
+
+func (service *UserService) GetNotificationsForUser(username string) ([]*domain.Notification, error) {
+	user, err := service.store.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	var notifications []*domain.Notification
+	for _, usernameFrom := range user.Connections {
+		notificationsDb, _ := service.notificationStore.GetByUsername(usernameFrom)
+		notifications = append(notifications, notificationsDb...)
+	}
+	return notifications, nil
+}
+
+func (service *UserService) SaveNotification(notification *domain.Notification) error {
+	err := service.notificationStore.Insert(notification)
+	if err != nil {
+		return err
+	}
+	return nil
 }

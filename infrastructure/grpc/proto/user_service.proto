@@ -154,6 +154,14 @@ service UserService{
     };
   }
 
+  rpc CreateNotification(NotificationRequest) returns(ConnectionResponse){}
+
+  rpc GetNotificationsForUser(ConnectionResponse) returns(NotificationResponse){
+    option(google.api.http) = {
+      get: "/user/notifications",
+    };
+  }
+
   rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
 
 }
@@ -276,6 +284,30 @@ message ConnectionRequest {
   User from = 2;
   User to = 3;
   google.protobuf.Timestamp requestTime = 4;
+}
+
+message Notification{
+  string id=1;
+  string username=2;
+  NotificationType type=3;
+  google.protobuf.Timestamp created = 4;
+}
+
+message NotificationResponse{
+  repeated Notification notification=1;
+}
+
+message NotificationRequest{
+  NotificationDto notification=1;
+}
+
+message NotificationDto {
+  string username=1;
+  NotificationType type=2;
+}
+enum NotificationType{
+    CREATED_POST =0;
+    MESSAGED =1;
 }
 
 message UserInfo {

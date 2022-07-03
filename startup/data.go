@@ -60,7 +60,8 @@ var users = []*domain.RegisteredUser{
 		Skills:       []string{"s1", "s2"},
 		BlockedUsers: []string{},
 		Interests:    []primitive.ObjectID{getObjectId("623b0cc3a34d25d8567f9f82")},
-		Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f84")},
+		Connections:  []string{},
+		//Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f84")},
 	},
 	{
 		Id:           getObjectId("723b0cc3a34d25d8567f9f83"),
@@ -79,7 +80,8 @@ var users = []*domain.RegisteredUser{
 		Skills:       []string{"s1", "s2"},
 		Interests:    []primitive.ObjectID{},
 		BlockedUsers: []string{"marijakljestan"},
-		Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f84"), getObjectId("723b0cc3a34d25d8567f9f82")},
+		Connections:  []string{},
+		//Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f84"), getObjectId("723b0cc3a34d25d8567f9f82")},
 	},
 	{
 		Id:           getObjectId("723b0cc3a34d25d8567f9f84"),
@@ -97,7 +99,8 @@ var users = []*domain.RegisteredUser{
 		Skills:       []string{"s1", "s2"},
 		BlockedUsers: []string{},
 		Interests:    []primitive.ObjectID{},
-		Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f82"), getObjectId("723b0cc3a34d25d8567f9f85")},
+		Connections:  []string{},
+		//Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f82"), getObjectId("723b0cc3a34d25d8567f9f85")},
 	},
 	{
 		Id:           getObjectId("723b0cc3a34d25d8567f9f85"),
@@ -116,7 +119,8 @@ var users = []*domain.RegisteredUser{
 		BlockedUsers: []string{"stefanljubovic"},
 		Skills:       []string{"s1", "s2"},
 		Interests:    []primitive.ObjectID{},
-		Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f82")},
+		//Connections:  []primitive.ObjectID{getObjectId("723b0cc3a34d25d8567f9f83"), getObjectId("723b0cc3a34d25d8567f9f82")},
+		Connections: []string{},
 	},
 	{
 		Id:           getObjectId("723b0cc3a34d25d8567f9f86"),
@@ -135,11 +139,13 @@ var users = []*domain.RegisteredUser{
 		Skills:       []string{"s1", "s2"},
 		BlockedUsers: []string{},
 		Interests:    []primitive.ObjectID{},
-		Connections:  []primitive.ObjectID{},
+		Connections:  []string{},
 	},
 }
 
 var connections []*domain.ConnectionRequest
+
+var notifications []*domain.Notification
 
 func getObjectId(id string) primitive.ObjectID {
 	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {

@@ -30,23 +30,31 @@ type Experience struct {
 }
 
 type RegisteredUser struct {
-	Id           primitive.ObjectID   `bson:"_id"`
-	FirstName    string               `bson:"first_name" validate:"required,alphaSpace"`
-	LastName     string               `bson:"last_name" validate:"required,alphaSpace"`
-	Email        string               `bson:"email" validate:"required,email"`
-	PhoneNumber  string               `bson:"phone_number" validate:"required,numeric,min=9,max=10"`
-	Gender       enum.Gender          `bson:"gender"`
-	DateOfBirth  time.Time            `bson:"date_of_birth" validate:"required"`
-	Biography    string               `bson:"biography" validate:"required,max=256"`
-	IsPrivate    bool                 `bson:"is_private"`
-	IsActive     bool                 `bson:"is_active"`
-	Experiences  []Experience         `bson:"experiences"`
-	Educations   []Education          `bson:"educations"`
-	Skills       []string             `bson:"skills"`
-	Interests    []primitive.ObjectID `bson:"interests"`
-	Connections  []primitive.ObjectID `bson:"connections"`
-	Username     string               `bson:"username" validate:"required,username"`
-	BlockedUsers []string             `bson:"blocked_users"`
+	Id            primitive.ObjectID   `bson:"_id"`
+	FirstName     string               `bson:"first_name" validate:"required,alphaSpace"`
+	LastName      string               `bson:"last_name" validate:"required,alphaSpace"`
+	Email         string               `bson:"email" validate:"required,email"`
+	PhoneNumber   string               `bson:"phone_number" validate:"required,numeric,min=9,max=10"`
+	Gender        enum.Gender          `bson:"gender"`
+	DateOfBirth   time.Time            `bson:"date_of_birth" validate:"required"`
+	Biography     string               `bson:"biography" validate:"required,max=256"`
+	IsPrivate     bool                 `bson:"is_private"`
+	IsActive      bool                 `bson:"is_active"`
+	Experiences   []Experience         `bson:"experiences"`
+	Educations    []Education          `bson:"educations"`
+	Skills        []string             `bson:"skills"`
+	Interests     []primitive.ObjectID `bson:"interests"`
+	Connections   []string             `bson:"connections"`
+	Username      string               `bson:"username" validate:"required,username"`
+	BlockedUsers  []string             `bson:"blocked_users"`
+	Notifications bool                 `bson:"notifications"`
+}
+
+type Notification struct {
+	Id               primitive.ObjectID    `bson:"_id"`
+	Created          time.Time             `bson:"created"`
+	Username         string                `bson:"username"`
+	NotificationType enum.NotificationType `bson:"notification_type"`
 }
 
 type ConnectionRequest struct {
