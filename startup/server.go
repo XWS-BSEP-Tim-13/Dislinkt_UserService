@@ -2,8 +2,6 @@ package startup
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
@@ -17,8 +15,6 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
 	"log"
 	"net"
 )
@@ -114,7 +110,7 @@ func (server *Server) initUserHandler(service *application.UserService, goValida
 }
 
 func (server *Server) startGrpcServer(userHandler *api.UserHandler) {
-	cert, err := tls.LoadX509KeyPair(serverCertFile, serverKeyFile)
+	/*cert, err := tls.LoadX509KeyPair(serverCertFile, serverKeyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -137,13 +133,13 @@ func (server *Server) startGrpcServer(userHandler *api.UserHandler) {
 
 	opts := []grpc.ServerOption{
 		grpc.Creds(credentials.NewTLS(config)),
-	}
+	}*/
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer()
 	user.RegisterUserServiceServer(grpcServer, userHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
