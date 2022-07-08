@@ -1,12 +1,15 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type ConnectionRequestStore interface {
-	Get(id primitive.ObjectID) (*ConnectionRequest, error)
-	GetAll() ([]*ConnectionRequest, error)
-	Insert(company *ConnectionRequest) error
-	DeleteAll()
-	GetRequestsForUser(id primitive.ObjectID) ([]*ConnectionRequest, error)
-	Delete(id primitive.ObjectID)
+	Get(ctx context.Context, id primitive.ObjectID) (*ConnectionRequest, error)
+	GetAll(ctx context.Context) ([]*ConnectionRequest, error)
+	Insert(ctx context.Context, company *ConnectionRequest) error
+	DeleteAll(ctx context.Context)
+	GetRequestsForUser(ctx context.Context, id primitive.ObjectID) ([]*ConnectionRequest, error)
+	Delete(ctx context.Context, id primitive.ObjectID)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/jwt"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/tracer"
 
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
@@ -31,12 +32,17 @@ func NewUserHandler(service *application.UserService, goValidator *util.GoValida
 }
 
 func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
-	user, err := handler.service.Get(objectId)
+	user, err := handler.service.Get(ctx, objectId)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: u/:id")
 		return nil, err
@@ -50,8 +56,13 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 }
 
 func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFilter) (*pb.GetAllResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API FindByFilter")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := request.Filter
-	users, err := handler.service.FindByFilter(filter)
+	users, err := handler.service.FindByFilter(ctx, filter)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: FU")
 		return nil, err
@@ -69,12 +80,17 @@ func (handler *UserHandler) FindByFilter(ctx context.Context, request *pb.UserFi
 }
 
 func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.GetRequest) (*pb.UserRequests, error) {
+	span := tracer.StartSpanFromContext(ctx, "API GetRequestsForUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
-	requests, err := handler.service.GetRequestsForUser(id)
+	requests, err := handler.service.GetRequestsForUser(ctx, id)
 	response := &pb.UserRequests{
 		Requests: []*pb.ConnectionRequest{},
 	}
@@ -88,28 +104,43 @@ func (handler *UserHandler) GetRequestsForUser(ctx context.Context, request *pb.
 }
 
 func (handler *UserHandler) AcceptConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API AcceptConnectionRequest")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	connectionId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
-	handler.service.AcceptConnection(connectionId)
+	handler.service.AcceptConnection(ctx, connectionId)
 	handler.logger.InfoMessage("User: " + username + " | Action: ACR")
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request *pb.GetRequest) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API DeleteConnectionRequest")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	connectionId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
-	handler.service.DeleteConnectionRequest(connectionId)
+	handler.service.DeleteConnectionRequest(ctx, connectionId)
 	handler.logger.InfoMessage("User: " + username + " | Action: DCR")
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API DeleteConnection")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	fmt.Printf("Request: %s, id to: %s\n", request.Connection.IdFrom, request.Connection.IdTo)
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
@@ -118,7 +149,7 @@ func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.Co
 	if err != nil || err1 != nil {
 		return nil, err
 	}
-	err = handler.service.DeleteConnection(idFrom, idTo)
+	err = handler.service.DeleteConnection(ctx, idFrom, idTo)
 	if err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: DC/: " + idTo.String())
 		return nil, err
@@ -129,6 +160,11 @@ func (handler *UserHandler) DeleteConnection(ctx context.Context, request *pb.Co
 }
 
 func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.ConnectionBody) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API RequestConnection")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
@@ -137,12 +173,17 @@ func (handler *UserHandler) RequestConnection(ctx context.Context, request *pb.C
 		handler.logger.ErrorMessage("User: " + username + " | Action: CCR/: " + idTo.String())
 		return nil, err
 	}
-	handler.service.RequestConnection(idFrom, idTo)
+	handler.service.RequestConnection(ctx, idFrom, idTo)
 	handler.logger.InfoMessage("User: " + username + " | Action: CCR/: " + idTo.String())
 	return new(pb.ConnectionResponse), nil
 }
 
 func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.ConnectionResponse) (*pb.UserConnectionUsernames, error) {
+	span := tracer.StartSpanFromContext(ctx, "API GetUsernames")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
 		var connUsernames []string
@@ -152,7 +193,7 @@ func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.Connec
 		return response, nil
 	}
 	fmt.Println("Conn username", username)
-	connUsernames, err := handler.service.GetConnectionUsernamesForUser(username)
+	connUsernames, err := handler.service.GetConnectionUsernamesForUser(ctx, username)
 	response := &pb.UserConnectionUsernames{
 		Usernames: connUsernames,
 	}
@@ -165,12 +206,16 @@ func (handler *UserHandler) GetUsernames(ctx context.Context, request *pb.Connec
 }
 
 func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
-	fmt.Println("Change privacy begun")
+	span := tracer.StartSpanFromContext(ctx, "API ChangeAccountPrivacy")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	err = handler.service.ChangeAccountPrivacy(username, request.IsReadable)
+	err = handler.service.ChangeAccountPrivacy(ctx, username, request.IsReadable)
 	if err != nil {
 		return nil, err
 	}
@@ -179,13 +224,18 @@ func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *p
 }
 
 func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request *pb.ConnectionBody) (*pb.ReadPostsResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API CheckIfUserCanReadPosts")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	idFrom, err := primitive.ObjectIDFromHex(request.Connection.IdFrom)
 	idTo, err1 := primitive.ObjectIDFromHex(request.Connection.IdTo)
 	fmt.Printf("Id from: %s, id to: %s\n", idFrom, idTo)
 	if err != nil || err1 != nil {
 		return nil, err
 	}
-	isReadable, err1 := handler.service.CheckIfUserCanReadPosts(idFrom, idTo)
+	isReadable, err1 := handler.service.CheckIfUserCanReadPosts(ctx, idFrom, idTo)
 
 	if err1 != nil {
 		return nil, err
@@ -197,7 +247,12 @@ func (handler *UserHandler) CheckIfUserCanReadPosts(ctx context.Context, request
 }
 
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
-	users, err := handler.service.GetAll()
+	span := tracer.StartSpanFromContext(ctx, "API GetAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	users, err := handler.service.GetAll(ctx)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: GU")
 		return nil, err
@@ -216,6 +271,11 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 }
 
 func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UserInfoUpdate) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API UpdatePersonalInfo")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	id, _ := primitive.ObjectIDFromHex(request.UserInfo.Id)
 	userInfo := dto.NewUserInfo(id, request.UserInfo.FirstName, request.UserInfo.LastName, enum.Gender(request.UserInfo.Gender), request.UserInfo.DateOfBirth.AsTime(),
@@ -232,7 +292,7 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.UserInfo.Id
 
-	if _, err := handler.service.UpdatePersonalInfo(user); err != nil {
+	if _, err := handler.service.UpdatePersonalInfo(ctx, user); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: UP")
 		return nil, err
 	}
@@ -241,6 +301,11 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 }
 
 func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.ExperienceUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API AddExperience")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.ExperienceUpdate.UserId
@@ -255,7 +320,7 @@ func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.Exper
 
 	expId, _ := primitive.ObjectIDFromHex(request.ExperienceUpdate.UserId)
 
-	if err := handler.service.AddExperience(exp, expId); err != nil {
+	if err := handler.service.AddExperience(ctx, exp, expId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: AExp")
 		return nil, err
 	}
@@ -265,6 +330,11 @@ func (handler *UserHandler) AddExperience(ctx context.Context, request *pb.Exper
 }
 
 func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.EducationUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API AddEducation")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.EducationUpdate.UserId
@@ -279,7 +349,7 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 
 	expId, _ := primitive.ObjectIDFromHex(request.EducationUpdate.UserId)
 
-	if err := handler.service.AddEducation(education, expId); err != nil {
+	if err := handler.service.AddEducation(ctx, education, expId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: AEdu")
 		return nil, err
 	}
@@ -289,6 +359,11 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 }
 
 func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser) (*pb.NewUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "API CreateUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	fmt.Println((*request).User)
 	user := mapUserToDomain(request.User)
 
@@ -298,7 +373,7 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 		return nil, status.Error(500, err.Error())
 	}
 
-	newUser, err := handler.service.CreateNewUser(user)
+	newUser, err := handler.service.CreateNewUser(ctx, user)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: CU")
 		return nil, status.Error(400, err.Error())
@@ -313,9 +388,14 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.NewUser)
 }
 
 func (handler *UserHandler) ActivateAccount(ctx context.Context, request *pb.ActivateAccountRequest) (*pb.ActivateAccountResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API ActivateAccount")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	email := request.Email
 
-	resp, err := handler.service.ActivateAccount(email)
+	resp, err := handler.service.ActivateAccount(ctx, email)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: AA " + email)
 		return nil, status.Error(500, err.Error())
@@ -330,6 +410,11 @@ func (handler *UserHandler) ActivateAccount(ctx context.Context, request *pb.Act
 }
 
 func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API AddSkill")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Skill.Skill
@@ -342,7 +427,7 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 		return nil, status.Error(500, validationErr.Error())
 	}
 
-	if err := handler.service.AddSkill(request.Skill.Skill, userId); err != nil {
+	if err := handler.service.AddSkill(ctx, request.Skill.Skill, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: AS " + request.Skill.Skill)
 		return nil, err
 	}
@@ -352,13 +437,18 @@ func (handler *UserHandler) AddSkill(ctx context.Context, request *pb.SkillsUpda
 }
 
 func (handler *UserHandler) RemoveSkill(ctx context.Context, request *pb.RemoveSkillRequest) (*pb.RemoveSkillResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API RemoveSkill")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	userId, err := primitive.ObjectIDFromHex(request.Skill.UserId)
 	if err != nil {
 		return nil, status.Error(500, "Error parsing id.")
 	}
 
-	if err := handler.service.RemoveSkill(request.Skill.Skill, userId); err != nil {
+	if err := handler.service.RemoveSkill(ctx, request.Skill.Skill, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: RmS " + request.Skill.Skill)
 		return nil, err
 	}
@@ -372,12 +462,17 @@ func (handler *UserHandler) RemoveSkill(ctx context.Context, request *pb.RemoveS
 }
 
 func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.InterestsUpdateRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API AddInterest")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.Interest.CompanyId
 	userId, _ := primitive.ObjectIDFromHex(request.Interest.UserId)
 	companyId, _ := primitive.ObjectIDFromHex(request.Interest.CompanyId)
-	if err := handler.service.AddInterest(companyId, userId); err != nil {
+	if err := handler.service.AddInterest(ctx, companyId, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: AInt ")
 		return nil, err
 	}
@@ -387,12 +482,17 @@ func (handler *UserHandler) AddInterest(ctx context.Context, request *pb.Interes
 }
 
 func (handler *UserHandler) DeleteExperience(ctx context.Context, request *pb.DeleteExperienceRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API DeleteExperience")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.DeleteExperience.ExperienceId
 	userId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.UserId)
 	experienceId, _ := primitive.ObjectIDFromHex(request.DeleteExperience.ExperienceId)
-	if err := handler.service.DeleteExperience(experienceId, userId); err != nil {
+	if err := handler.service.DeleteExperience(ctx, experienceId, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: RmExp ")
 		return nil, err
 	}
@@ -402,12 +502,17 @@ func (handler *UserHandler) DeleteExperience(ctx context.Context, request *pb.De
 }
 
 func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.DeleteEducationRequest) (*pb.UserInfoUpdateResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API DeleteEducation")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	response := new(pb.UserInfoUpdateResponse)
 	response.Id = request.DeleteEducation.EducationId
 	userId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.UserId)
 	educationId, _ := primitive.ObjectIDFromHex(request.DeleteEducation.EducationId)
-	if err := handler.service.DeleteEducation(educationId, userId); err != nil {
+	if err := handler.service.DeleteEducation(ctx, educationId, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: RmEdu ")
 		return nil, err
 	}
@@ -417,6 +522,11 @@ func (handler *UserHandler) DeleteEducation(ctx context.Context, request *pb.Del
 }
 
 func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.RemoveInterestRequest) (*pb.RemoveInterestResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API RemoveInterest")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username, _ := jwt.ExtractUsernameFromToken(ctx)
 	userId, err := primitive.ObjectIDFromHex(request.Interest.UserId)
 	companyId, err := primitive.ObjectIDFromHex(request.Interest.CompanyId)
@@ -424,7 +534,7 @@ func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.Remo
 		return nil, status.Error(500, "Error parsing id.")
 	}
 
-	if err := handler.service.RemoveInterest(companyId, userId); err != nil {
+	if err := handler.service.RemoveInterest(ctx, companyId, userId); err != nil {
 		handler.logger.ErrorMessage("User: " + username + " | Action: RmInt ")
 		return nil, err
 	}
@@ -438,8 +548,13 @@ func (handler *UserHandler) RemoveInterest(ctx context.Context, request *pb.Remo
 }
 
 func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API GetByUsername")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username := request.Id
-	user, err := handler.service.GetByUsername(username)
+	user, err := handler.service.GetByUsername(ctx, username)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: u/" + username)
 		return nil, err
@@ -454,8 +569,13 @@ func (handler *UserHandler) GetByUsername(ctx context.Context, request *pb.GetRe
 }
 
 func (handler *UserHandler) GetByEmail(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "API GetByEmail")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	username := request.Id
-	user, err := handler.service.GetByEmail(username)
+	user, err := handler.service.GetByEmail(ctx, username)
 	if err != nil {
 		handler.logger.ErrorMessage("Action: u/" + username)
 		return nil, err

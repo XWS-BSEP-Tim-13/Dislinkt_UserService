@@ -10,19 +10,21 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/persistence"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/startup/config"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/tracer"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
+	otgrpc "github.com/opentracing-contrib/go-grpc"
 	otgo "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 )
 
-var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
-
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 const (
@@ -32,8 +34,13 @@ const (
 )
 
 func NewServer(config *config.Config) *Server {
+	tracer, closer := tracer.Init()
+	otgo.SetGlobalTracer(tracer)
+
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
@@ -60,10 +67,10 @@ func (server *Server) initMongoClient() *mongo.Client {
 
 func (server *Server) initConnectionStore(client *mongo.Client) domain.ConnectionRequestStore {
 	store := persistence.NewConnectionsMongoDBStore(client)
-	store.DeleteAll()
+	store.DeleteAll(context.TODO())
 
 	for _, connection := range connections {
-		err := store.Insert(connection)
+		err := store.Insert(context.TODO(), connection)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -73,9 +80,9 @@ func (server *Server) initConnectionStore(client *mongo.Client) domain.Connectio
 
 func (server *Server) initUserStore(client *mongo.Client) domain.UserStore {
 	store := persistence.NewUserMongoDBStore(client)
-	store.DeleteAll()
+	store.DeleteAll(context.TODO())
 	for _, user := range users {
-		err := store.Insert(user)
+		err := store.Insert(context.TODO(), user)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -115,17 +122,20 @@ func (server *Server) startGrpcServer(userHandler *api.UserHandler) {
 		Certificates: []tls.Certificate{cert},
 		ClientAuth:   tls.RequestClientCert,
 		ClientCAs:    certPool,
-	}
+	}*/
 
 	opts := []grpc.ServerOption{
-		grpc.Creds(credentials.NewTLS(config)),
-	}*/
+		grpc.UnaryInterceptor(
+			otgrpc.OpenTracingServerInterceptor(server.tracer)),
+		grpc.StreamInterceptor(
+			otgrpc.OpenTracingStreamServerInterceptor(server.tracer)),
+	}
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(opts...)
 	user.RegisterUserServiceServer(grpcServer, userHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)

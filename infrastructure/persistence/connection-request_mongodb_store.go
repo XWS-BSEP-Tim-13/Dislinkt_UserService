@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/tracer"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,27 +18,52 @@ type ConnectionsMongoDBStore struct {
 	connections *mongo.Collection
 }
 
-func (store ConnectionsMongoDBStore) Delete(id primitive.ObjectID) {
+func (store ConnectionsMongoDBStore) Delete(ctx context.Context, id primitive.ObjectID) {
+	span := tracer.StartSpanFromContext(ctx, "DB Delete")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"_id": id}
 	store.connections.DeleteOne(context.TODO(), filter)
 }
 
-func (store ConnectionsMongoDBStore) GetRequestsForUser(id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
+func (store ConnectionsMongoDBStore) GetRequestsForUser(ctx context.Context, id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB GetRequestsForUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.D{{"to._id", id}}
-	return store.filter(filter)
+	return store.filter(ctx, filter)
 }
 
-func (store ConnectionsMongoDBStore) Get(id primitive.ObjectID) (*domain.ConnectionRequest, error) {
+func (store ConnectionsMongoDBStore) Get(ctx context.Context, id primitive.ObjectID) (*domain.ConnectionRequest, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"_id": id}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store ConnectionsMongoDBStore) GetAll() ([]*domain.ConnectionRequest, error) {
+func (store ConnectionsMongoDBStore) GetAll(ctx context.Context) ([]*domain.ConnectionRequest, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB GetAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.D{{}}
-	return store.filter(filter)
+	return store.filter(ctx, filter)
 }
 
-func (store ConnectionsMongoDBStore) Insert(connection *domain.ConnectionRequest) error {
+func (store ConnectionsMongoDBStore) Insert(ctx context.Context, connection *domain.ConnectionRequest) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Insert")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	result, err := store.connections.InsertOne(context.TODO(), connection)
 	if err != nil {
 		return err
@@ -46,12 +72,22 @@ func (store ConnectionsMongoDBStore) Insert(connection *domain.ConnectionRequest
 	return nil
 }
 
-func (store ConnectionsMongoDBStore) DeleteAll() {
-	store.connections.DeleteMany(context.TODO(), bson.D{{}})
+func (store ConnectionsMongoDBStore) DeleteAll(ctx context.Context) {
+	span := tracer.StartSpanFromContext(ctx, "DB DeleteAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	store.connections.DeleteMany(ctx, bson.D{{}})
 }
 
-func (store *ConnectionsMongoDBStore) filter(filter interface{}) ([]*domain.ConnectionRequest, error) {
-	cursor, err := store.connections.Find(context.TODO(), filter)
+func (store *ConnectionsMongoDBStore) filter(ctx context.Context, filter interface{}) ([]*domain.ConnectionRequest, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB filter")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	cursor, err := store.connections.Find(ctx, filter)
 	defer cursor.Close(context.TODO())
 
 	if err != nil {
@@ -60,8 +96,13 @@ func (store *ConnectionsMongoDBStore) filter(filter interface{}) ([]*domain.Conn
 	return decodeConnection(cursor)
 }
 
-func (store *ConnectionsMongoDBStore) filterOne(filter interface{}) (connection *domain.ConnectionRequest, err error) {
-	result := store.connections.FindOne(context.TODO(), filter)
+func (store *ConnectionsMongoDBStore) filterOne(ctx context.Context, filter interface{}) (connection *domain.ConnectionRequest, err error) {
+	span := tracer.StartSpanFromContext(ctx, "DB filterOne")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	result := store.connections.FindOne(ctx, filter)
 	err = result.Decode(&connection)
 	return
 }
