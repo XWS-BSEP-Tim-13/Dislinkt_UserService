@@ -25,7 +25,7 @@ func (store ConnectionsMongoDBStore) Delete(ctx context.Context, id primitive.Ob
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
 	filter := bson.M{"_id": id}
-	store.connections.DeleteOne(context.TODO(), filter)
+	store.connections.DeleteOne(ctx, filter)
 }
 
 func (store ConnectionsMongoDBStore) GetRequestsForUser(ctx context.Context, id primitive.ObjectID) ([]*domain.ConnectionRequest, error) {
@@ -64,7 +64,7 @@ func (store ConnectionsMongoDBStore) Insert(ctx context.Context, connection *dom
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
-	result, err := store.connections.InsertOne(context.TODO(), connection)
+	result, err := store.connections.InsertOne(ctx, connection)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (store *ConnectionsMongoDBStore) filter(ctx context.Context, filter interfa
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
 	cursor, err := store.connections.Find(ctx, filter)
-	defer cursor.Close(context.TODO())
+	defer cursor.Close(ctx)
 
 	if err != nil {
 		return nil, err

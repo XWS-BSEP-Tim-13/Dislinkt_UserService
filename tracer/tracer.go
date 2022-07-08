@@ -20,7 +20,7 @@ func Init() (opentracing.Tracer, io.Closer) {
 		return nil, nil
 	}
 
-	cfg.ServiceName = "post_service"
+	cfg.ServiceName = "user_service"
 	cfg.Sampler.Type = jaeger.SamplerTypeConst
 	cfg.Sampler.Param = 1
 	cfg.Reporter.LogSpans = true
