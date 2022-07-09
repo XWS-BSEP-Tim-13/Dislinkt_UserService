@@ -61,7 +61,7 @@ var users = []*domain.RegisteredUser{
 		Skills:       []string{"Java", "Docker"},
 		BlockedUsers: []string{},
 		Interests:    []primitive.ObjectID{getObjectId("623b0cc3a34d25d8567f9f82")},
-		Connections:  []string{"anagavrilovic"},
+		Connections:  []string{"anagavrilovic", "stefanljubovic"},
 	},
 	{
 		Id:            getObjectId("723b0cc3a34d25d8567f9f83"),

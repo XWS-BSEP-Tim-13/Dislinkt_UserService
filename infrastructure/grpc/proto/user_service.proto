@@ -158,6 +158,12 @@ service UserService{
 
   rpc MessageNotification(Connection) returns(ConnectionResponse){}
 
+  rpc UpdateUserNotificationAlert(ReadPostsResponse) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/notifications/{isReadable}",
+    };
+  }
+
   rpc GetNotificationsForUser(ConnectionResponse) returns(NotificationResponse){
     option(google.api.http) = {
       get: "/user/notifications",

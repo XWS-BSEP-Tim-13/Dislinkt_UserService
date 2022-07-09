@@ -49,6 +49,17 @@ func (store *UserMongoDBStore) GetAllActive(ctx context.Context) ([]*domain.Regi
 	return store.filter(ctx, filter)
 }
 
+func (store *UserMongoDBStore) UpdateDisplayUserNotifications(displayNotifications bool, username string) error {
+	_, err := store.users.UpdateOne(
+		context.TODO(),
+		bson.M{"username": username, "is_active": true},
+		bson.D{
+			{"$set", bson.D{{"notifications", displayNotifications}}},
+		},
+	)
+	return err
+}
+
 func (store *UserMongoDBStore) GetActiveByUsername(ctx context.Context, username string) (*domain.RegisteredUser, error) {
 	span := tracer.StartSpanFromContext(ctx, "DB Get")
 	defer span.Finish()

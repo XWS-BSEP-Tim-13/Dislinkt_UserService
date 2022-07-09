@@ -251,7 +251,10 @@ func (handler *UserHandler) AddEducation(ctx context.Context, request *pb.Educat
 }
 
 func (handler *UserHandler) GetNotificationsForUser(ctx context.Context, request *pb.ConnectionResponse) (*pb.NotificationResponse, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
+	username, err := jwt.ExtractUsernameFromToken(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
 	span := tracer.StartSpanFromContext(ctx, "API AddEducation")
 	defer span.Finish()
 
@@ -268,6 +271,13 @@ func (handler *UserHandler) GetNotificationsForUser(ctx context.Context, request
 		current := mapNotificationToPB(notification)
 		response.Notification = append(response.Notification, current)
 	}
+	return response, nil
+}
+
+func (handler *UserHandler) UpdateUserNotificationAlert(ctx context.Context, request *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
+	handler.service.UpdateNotificationAlert(username, request.IsReadable)
+	response := &pb.ConnectionResponse{}
 	return response, nil
 }
 

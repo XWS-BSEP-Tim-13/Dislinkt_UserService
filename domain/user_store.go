@@ -27,4 +27,5 @@ type UserStore interface {
 	DeleteEducation(ctx context.Context, educationId primitive.ObjectID, userId primitive.ObjectID) error
 	RemoveInterest(ctx context.Context, companyId primitive.ObjectID, userId primitive.ObjectID) error
 	ChangeAccountPrivacy(ctx context.Context, isPrivate bool, username string) error
+	UpdateDisplayUserNotifications(displayNotifications bool, username string) error
 }

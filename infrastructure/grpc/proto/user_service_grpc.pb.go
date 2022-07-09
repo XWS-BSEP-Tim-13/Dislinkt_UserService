@@ -47,6 +47,7 @@ type UserServiceClient interface {
 	ChangeAccountPrivacy(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	CreateNotification(ctx context.Context, in *NotificationRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	MessageNotification(ctx context.Context, in *Connection, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	UpdateUserNotificationAlert(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	GetNotificationsForUser(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*NotificationResponse, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
@@ -284,6 +285,15 @@ func (c *userServiceClient) MessageNotification(ctx context.Context, in *Connect
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateUserNotificationAlert(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error) {
+	out := new(ConnectionResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdateUserNotificationAlert", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetNotificationsForUser(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*NotificationResponse, error) {
 	out := new(NotificationResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetNotificationsForUser", in, out, opts...)
@@ -331,6 +341,7 @@ type UserServiceServer interface {
 	ChangeAccountPrivacy(context.Context, *ReadPostsResponse) (*ConnectionResponse, error)
 	CreateNotification(context.Context, *NotificationRequest) (*ConnectionResponse, error)
 	MessageNotification(context.Context, *Connection) (*ConnectionResponse, error)
+	UpdateUserNotificationAlert(context.Context, *ReadPostsResponse) (*ConnectionResponse, error)
 	GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -414,6 +425,9 @@ func (UnimplementedUserServiceServer) CreateNotification(context.Context, *Notif
 }
 func (UnimplementedUserServiceServer) MessageNotification(context.Context, *Connection) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessageNotification not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUserNotificationAlert(context.Context, *ReadPostsResponse) (*ConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserNotificationAlert not implemented")
 }
 func (UnimplementedUserServiceServer) GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotificationsForUser not implemented")
@@ -884,6 +898,24 @@ func _UserService_MessageNotification_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdateUserNotificationAlert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadPostsResponse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUserNotificationAlert(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdateUserNotificationAlert",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUserNotificationAlert(ctx, req.(*ReadPostsResponse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetNotificationsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConnectionResponse)
 	if err := dec(in); err != nil {
@@ -1026,6 +1058,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MessageNotification",
 			Handler:    _UserService_MessageNotification_Handler,
+		},
+		{
+			MethodName: "UpdateUserNotificationAlert",
+			Handler:    _UserService_UpdateUserNotificationAlert_Handler,
 		},
 		{
 			MethodName: "GetNotificationsForUser",

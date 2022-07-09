@@ -248,6 +248,7 @@ func (service *UserService) GetNotificationsForUser(ctx context.Context, usernam
 	span := tracer.StartSpanFromContext(ctx, "SERVICE ChangeAccountPrivacy")
 	defer span.Finish()
 	user, err := service.store.GetByUsername(ctx, username)
+	fmt.Println(user)
 	if err != nil {
 		return nil, err
 	}
@@ -266,4 +267,8 @@ func (service *UserService) SaveNotification(notification *domain.Notification) 
 		return err
 	}
 	return nil
+}
+
+func (service *UserService) UpdateNotificationAlert(username string, displayNotifications bool) error {
+	return service.store.UpdateDisplayUserNotifications(displayNotifications, username)
 }
