@@ -11,16 +11,17 @@ import (
 
 func mapUserToPB(user *domain.RegisteredUser) *pb.User {
 	userPb := &pb.User{
-		Id:          user.Id.Hex(),
-		Username:    user.Username,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		Gender:      pb.User_Gender(user.Gender),
-		DateOfBirth: timestamppb.New(user.DateOfBirth),
-		Biography:   user.Biography,
-		IsPrivate:   user.IsPrivate,
+		Id:           user.Id.Hex(),
+		Username:     user.Username,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		Email:        user.Email,
+		PhoneNumber:  user.PhoneNumber,
+		Gender:       pb.User_Gender(user.Gender),
+		DateOfBirth:  timestamppb.New(user.DateOfBirth),
+		Biography:    user.Biography,
+		IsPrivate:    user.IsPrivate,
+		Notification: user.Notifications,
 	}
 
 	for _, experience := range user.Experiences {

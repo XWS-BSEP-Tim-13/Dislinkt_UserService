@@ -245,8 +245,8 @@ message User {
   repeated string skills = 12;
   repeated string interests = 13;
   repeated string connections = 14;
-
   string username = 15;
+  bool notification =16;
 }
 
 message Experience {
