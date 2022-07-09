@@ -217,6 +217,26 @@ var users = []*domain.RegisteredUser{
 		Connections:   []string{},
 		Notifications: false,
 	},
+	{
+		Id:            getObjectId("723b0cc3a34d25d8567f9f87"),
+		FirstName:     "Admin",
+		LastName:      "",
+		Email:         "admin@gmail.com",
+		PhoneNumber:   "064364374",
+		Username:      "admin",
+		Gender:        0,
+		DateOfBirth:   time.Time{},
+		Biography:     "Dislinkt admin",
+		IsPrivate:     false,
+		IsActive:      true,
+		Experiences:   []domain.Experience{},
+		Educations:    []domain.Education{},
+		Skills:        []string{"Java", "C#"},
+		BlockedUsers:  []string{},
+		Interests:     []primitive.ObjectID{},
+		Connections:   []string{},
+		Notifications: false,
+	},
 }
 
 var connections []*domain.ConnectionRequest
