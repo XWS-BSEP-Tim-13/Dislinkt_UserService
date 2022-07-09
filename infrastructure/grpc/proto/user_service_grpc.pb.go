@@ -46,7 +46,7 @@ type UserServiceClient interface {
 	GetUsernames(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
 	ChangeAccountPrivacy(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	CreateNotification(ctx context.Context, in *NotificationRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
-	MessageNotification(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	MessageNotification(ctx context.Context, in *Connection, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	GetNotificationsForUser(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*NotificationResponse, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
@@ -275,7 +275,7 @@ func (c *userServiceClient) CreateNotification(ctx context.Context, in *Notifica
 	return out, nil
 }
 
-func (c *userServiceClient) MessageNotification(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*ConnectionResponse, error) {
+func (c *userServiceClient) MessageNotification(ctx context.Context, in *Connection, opts ...grpc.CallOption) (*ConnectionResponse, error) {
 	out := new(ConnectionResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/MessageNotification", in, out, opts...)
 	if err != nil {
@@ -330,7 +330,7 @@ type UserServiceServer interface {
 	GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error)
 	ChangeAccountPrivacy(context.Context, *ReadPostsResponse) (*ConnectionResponse, error)
 	CreateNotification(context.Context, *NotificationRequest) (*ConnectionResponse, error)
-	MessageNotification(context.Context, *UserUsername) (*ConnectionResponse, error)
+	MessageNotification(context.Context, *Connection) (*ConnectionResponse, error)
 	GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -412,7 +412,7 @@ func (UnimplementedUserServiceServer) ChangeAccountPrivacy(context.Context, *Rea
 func (UnimplementedUserServiceServer) CreateNotification(context.Context, *NotificationRequest) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNotification not implemented")
 }
-func (UnimplementedUserServiceServer) MessageNotification(context.Context, *UserUsername) (*ConnectionResponse, error) {
+func (UnimplementedUserServiceServer) MessageNotification(context.Context, *Connection) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessageNotification not implemented")
 }
 func (UnimplementedUserServiceServer) GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error) {
@@ -867,7 +867,7 @@ func _UserService_CreateNotification_Handler(srv interface{}, ctx context.Contex
 }
 
 func _UserService_MessageNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserUsername)
+	in := new(Connection)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -879,7 +879,7 @@ func _UserService_MessageNotification_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/user.UserService/MessageNotification",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).MessageNotification(ctx, req.(*UserUsername))
+		return srv.(UserServiceServer).MessageNotification(ctx, req.(*Connection))
 	}
 	return interceptor(ctx, in, info, handler)
 }

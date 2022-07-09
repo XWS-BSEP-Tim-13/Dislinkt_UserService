@@ -279,9 +279,8 @@ func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.
 	return response, nil
 }
 
-func (handler *UserHandler) MessageNotification(ctx context.Context, request *pb.UserUsername) (*pb.ConnectionResponse, error) {
-	username, _ := jwt.ExtractUsernameFromToken(ctx)
-	notification := notificationCreate(username, request.Username)
+func (handler *UserHandler) MessageNotification(ctx context.Context, request *pb.Connection) (*pb.ConnectionResponse, error) {
+	notification := notificationCreate(request.IdFrom, request.IdTo)
 	fmt.Println(notification)
 	handler.service.SaveNotification(notification)
 	response := &pb.ConnectionResponse{}
