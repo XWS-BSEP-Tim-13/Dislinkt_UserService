@@ -2,6 +2,7 @@ package application
 
 import (
 	"errors"
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/logging"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -169,6 +170,7 @@ func (service *UserService) GetNotificationsForUser(username string) ([]*domain.
 	}
 	var notifications []*domain.Notification
 	for _, usernameFrom := range user.Connections {
+		fmt.Println(usernameFrom)
 		notificationsDb, _ := service.notificationStore.GetByUsername(usernameFrom)
 		notifications = append(notifications, notificationsDb...)
 	}

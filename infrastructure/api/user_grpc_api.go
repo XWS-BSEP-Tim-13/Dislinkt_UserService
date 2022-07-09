@@ -235,6 +235,16 @@ func (handler *UserHandler) GetNotificationsForUser(ctx context.Context, request
 
 func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.NotificationRequest) (*pb.ConnectionResponse, error) {
 	notification := mapPbToNotificationDomain(request.Notification)
+	fmt.Println(notification)
+	handler.service.SaveNotification(notification)
+	response := &pb.ConnectionResponse{}
+	return response, nil
+}
+
+func (handler *UserHandler) MessageNotification(ctx context.Context, request *pb.UserUsername) (*pb.ConnectionResponse, error) {
+	username, _ := jwt.ExtractUsernameFromToken(ctx)
+	notification := notificationCreate(username, request.Username)
+	fmt.Println(notification)
 	handler.service.SaveNotification(notification)
 	response := &pb.ConnectionResponse{}
 	return response, nil

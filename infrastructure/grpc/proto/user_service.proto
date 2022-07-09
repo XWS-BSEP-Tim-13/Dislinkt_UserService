@@ -156,6 +156,8 @@ service UserService{
 
   rpc CreateNotification(NotificationRequest) returns(ConnectionResponse){}
 
+  rpc MessageNotification(UserUsername) returns(ConnectionResponse){}
+
   rpc GetNotificationsForUser(ConnectionResponse) returns(NotificationResponse){
     option(google.api.http) = {
       get: "/user/notifications",

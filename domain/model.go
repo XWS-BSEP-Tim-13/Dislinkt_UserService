@@ -55,6 +55,7 @@ type Notification struct {
 	Created          time.Time             `bson:"created"`
 	Username         string                `bson:"username"`
 	NotificationType enum.NotificationType `bson:"notification_type"`
+	MessageTo        string                `bson:"message_to"`
 }
 
 type ConnectionRequest struct {

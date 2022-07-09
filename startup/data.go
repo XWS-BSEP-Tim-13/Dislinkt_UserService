@@ -2,24 +2,25 @@ package startup
 
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain/enum"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 var users = []*domain.RegisteredUser{
 	{
-		Id:          getObjectId("723b0cc3a34d25d8567f9f82"),
-		FirstName:   "Srdjan",
-		LastName:    "Sukovic",
-		Email:       "srdjansukovic@gmail.com",
-		PhoneNumber: "0649459562",
-		Gender:      0,
-		DateOfBirth: time.Time{},
-		Biography:   "Entrepreneur, investor, and business magnate. Next I’m buying Coca-Cola to put the cocaine back in.",
-		IsPrivate:   false,
-		IsActive:    true,
-		Username:    "srdjansukovic",
-
+		Id:            getObjectId("723b0cc3a34d25d8567f9f82"),
+		FirstName:     "Srdjan",
+		LastName:      "Sukovic",
+		Email:         "srdjansukovic@gmail.com",
+		PhoneNumber:   "0649459562",
+		Gender:        0,
+		DateOfBirth:   time.Time{},
+		Biography:     "Entrepreneur, investor, and business magnate. Next I’m buying Coca-Cola to put the cocaine back in.",
+		IsPrivate:     false,
+		IsActive:      true,
+		Username:      "srdjansukovic",
+		Notifications: false,
 		Experiences: []domain.Experience{
 			{
 				Id:                 getObjectId("723b0cc3a34d25d8567f9d72"),
@@ -63,17 +64,18 @@ var users = []*domain.RegisteredUser{
 		Connections:  []string{"anagavrilovic"},
 	},
 	{
-		Id:          getObjectId("723b0cc3a34d25d8567f9f83"),
-		FirstName:   "Stefan",
-		LastName:    "Ljubovic",
-		Email:       "ljubovicstefan@gmail.com",
-		PhoneNumber: "0654324995",
-		Username:    "stefanljubovic",
-		Gender:      0,
-		DateOfBirth: time.Time{},
-		Biography:   "biography sample",
-		IsPrivate:   true,
-		IsActive:    true,
+		Id:            getObjectId("723b0cc3a34d25d8567f9f83"),
+		FirstName:     "Stefan",
+		LastName:      "Ljubovic",
+		Email:         "ljubovicstefan@gmail.com",
+		PhoneNumber:   "0654324995",
+		Username:      "stefanljubovic",
+		Gender:        0,
+		DateOfBirth:   time.Time{},
+		Biography:     "biography sample",
+		IsPrivate:     true,
+		IsActive:      true,
+		Notifications: true,
 		Experiences: []domain.Experience{
 			{
 				Id:                 getObjectId("723b0cc3a34d25d8567f9d73"),
@@ -107,16 +109,17 @@ var users = []*domain.RegisteredUser{
 		Connections:  []string{"srdjansukovic"},
 	},
 	{
-		Id:          getObjectId("723b0cc3a34d25d8567f9f84"),
-		FirstName:   "Ana",
-		LastName:    "Gavrilovic",
-		Email:       "anagavrilovic@gmail.com",
-		PhoneNumber: "0642152",
-		Username:    "anagavrilovic",
-		Gender:      1,
-		DateOfBirth: time.Time{},
-		Biography:   "biography sample",
-		IsPrivate:   false,
+		Id:            getObjectId("723b0cc3a34d25d8567f9f84"),
+		FirstName:     "Ana",
+		LastName:      "Gavrilovic",
+		Email:         "anagavrilovic@gmail.com",
+		PhoneNumber:   "0642152",
+		Username:      "anagavrilovic",
+		Gender:        1,
+		DateOfBirth:   time.Time{},
+		Biography:     "biography sample",
+		IsPrivate:     false,
+		Notifications: true,
 		Experiences: []domain.Experience{
 			{
 				Id:                 getObjectId("723b0cc3a34d25d8567f9d74"),
@@ -150,17 +153,18 @@ var users = []*domain.RegisteredUser{
 		Connections:  []string{"srdjansukovic,lenka"},
 	},
 	{
-		Id:          getObjectId("723b0cc3a34d25d8567f9f85"),
-		FirstName:   "Marija",
-		LastName:    "Kljestan",
-		Email:       "marijakljestan@gmail.com",
-		PhoneNumber: "0642152643",
-		Username:    "marijakljestan",
-		Gender:      1,
-		DateOfBirth: time.Time{},
-		Biography:   "biography sample",
-		IsPrivate:   false,
-		IsActive:    true,
+		Id:            getObjectId("723b0cc3a34d25d8567f9f85"),
+		FirstName:     "Marija",
+		LastName:      "Kljestan",
+		Email:         "marijakljestan@gmail.com",
+		PhoneNumber:   "0642152643",
+		Username:      "marijakljestan",
+		Gender:        1,
+		DateOfBirth:   time.Time{},
+		Biography:     "biography sample",
+		IsPrivate:     false,
+		IsActive:      true,
+		Notifications: false,
 		Experiences: []domain.Experience{
 			{
 				Id:                 getObjectId("723b0cc3a34d25d8567f9d75"),
@@ -194,29 +198,49 @@ var users = []*domain.RegisteredUser{
 		Connections:  []string{"lenka"},
 	},
 	{
-		Id:           getObjectId("723b0cc3a34d25d8567f9f86"),
-		FirstName:    "Lenka",
-		LastName:     "Aleksic",
-		Email:        "lenka@gmail.com",
-		PhoneNumber:  "064364364",
-		Username:     "lenka",
-		Gender:       1,
-		DateOfBirth:  time.Time{},
-		Biography:    "biography sample",
-		IsPrivate:    false,
-		IsActive:     true,
-		Experiences:  []domain.Experience{},
-		Educations:   []domain.Education{},
-		Skills:       []string{"Java", "C#"},
-		BlockedUsers: []string{},
-		Interests:    []primitive.ObjectID{},
-		Connections:  []string{},
+		Id:            getObjectId("723b0cc3a34d25d8567f9f86"),
+		FirstName:     "Lenka",
+		LastName:      "Aleksic",
+		Email:         "lenka@gmail.com",
+		PhoneNumber:   "064364364",
+		Username:      "lenka",
+		Gender:        1,
+		DateOfBirth:   time.Time{},
+		Biography:     "biography sample",
+		IsPrivate:     false,
+		IsActive:      true,
+		Experiences:   []domain.Experience{},
+		Educations:    []domain.Education{},
+		Skills:        []string{"Java", "C#"},
+		BlockedUsers:  []string{},
+		Interests:     []primitive.ObjectID{},
+		Connections:   []string{},
+		Notifications: false,
 	},
 }
 
 var connections []*domain.ConnectionRequest
 
-var notifications []*domain.Notification
+var notifications = []*domain.Notification{
+	{
+		Id:               getObjectId("723b0cc3a34d25d8567f9f82"),
+		Username:         "srdjansukovic",
+		NotificationType: enum.NotificationType(0),
+		Created:          time.Now(),
+	},
+	{
+		Id:               getObjectId("723b0cc3a34d25d8567f9f83"),
+		Username:         "srdjansukovic",
+		NotificationType: enum.NotificationType(1),
+		Created:          time.Now(),
+	},
+	{
+		Id:               getObjectId("723b0cc3a34d25d8567f9f84"),
+		Username:         "srdjansukovic",
+		NotificationType: enum.NotificationType(0),
+		Created:          time.Now(),
+	},
+}
 
 func getObjectId(id string) primitive.ObjectID {
 	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {

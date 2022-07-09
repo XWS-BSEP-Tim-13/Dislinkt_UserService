@@ -46,6 +46,7 @@ type UserServiceClient interface {
 	GetUsernames(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*UserConnectionUsernames, error)
 	ChangeAccountPrivacy(ctx context.Context, in *ReadPostsResponse, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	CreateNotification(ctx context.Context, in *NotificationRequest, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	MessageNotification(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	GetNotificationsForUser(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*NotificationResponse, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 }
@@ -274,6 +275,15 @@ func (c *userServiceClient) CreateNotification(ctx context.Context, in *Notifica
 	return out, nil
 }
 
+func (c *userServiceClient) MessageNotification(ctx context.Context, in *UserUsername, opts ...grpc.CallOption) (*ConnectionResponse, error) {
+	out := new(ConnectionResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/MessageNotification", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetNotificationsForUser(ctx context.Context, in *ConnectionResponse, opts ...grpc.CallOption) (*NotificationResponse, error) {
 	out := new(NotificationResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetNotificationsForUser", in, out, opts...)
@@ -320,6 +330,7 @@ type UserServiceServer interface {
 	GetUsernames(context.Context, *ConnectionResponse) (*UserConnectionUsernames, error)
 	ChangeAccountPrivacy(context.Context, *ReadPostsResponse) (*ConnectionResponse, error)
 	CreateNotification(context.Context, *NotificationRequest) (*ConnectionResponse, error)
+	MessageNotification(context.Context, *UserUsername) (*ConnectionResponse, error)
 	GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -400,6 +411,9 @@ func (UnimplementedUserServiceServer) ChangeAccountPrivacy(context.Context, *Rea
 }
 func (UnimplementedUserServiceServer) CreateNotification(context.Context, *NotificationRequest) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNotification not implemented")
+}
+func (UnimplementedUserServiceServer) MessageNotification(context.Context, *UserUsername) (*ConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessageNotification not implemented")
 }
 func (UnimplementedUserServiceServer) GetNotificationsForUser(context.Context, *ConnectionResponse) (*NotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotificationsForUser not implemented")
@@ -852,6 +866,24 @@ func _UserService_CreateNotification_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_MessageNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).MessageNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/MessageNotification",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).MessageNotification(ctx, req.(*UserUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetNotificationsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConnectionResponse)
 	if err := dec(in); err != nil {
@@ -990,6 +1022,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateNotification",
 			Handler:    _UserService_CreateNotification_Handler,
+		},
+		{
+			MethodName: "MessageNotification",
+			Handler:    _UserService_MessageNotification_Handler,
 		},
 		{
 			MethodName: "GetNotificationsForUser",

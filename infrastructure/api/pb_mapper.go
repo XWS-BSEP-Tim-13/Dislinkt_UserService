@@ -165,6 +165,17 @@ func mapPbToNotificationDomain(request *pb.NotificationDto) *domain.Notification
 	return notification
 }
 
+func notificationCreate(loggedUser, user string) *domain.Notification {
+	notification := domain.Notification{
+		Id:               primitive.NewObjectID(),
+		Username:         loggedUser,
+		MessageTo:        user,
+		NotificationType: enum.MESSAGED,
+		Created:          time.Now(),
+	}
+	return &notification
+}
+
 func mapConnectionRequest(request *domain.ConnectionRequest) *pb.ConnectionRequest {
 	connectionPb := &pb.ConnectionRequest{
 		Id:          request.Id.Hex(),
