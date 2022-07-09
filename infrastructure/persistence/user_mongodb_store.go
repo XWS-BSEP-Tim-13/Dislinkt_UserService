@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/tracer"
 	util "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,38 +29,73 @@ func NewUserMongoDBStore(client *mongo.Client) domain.UserStore {
 	}
 }
 
-func (store *UserMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetActiveById(ctx context.Context, id primitive.ObjectID) (*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"_id": id}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store *UserMongoDBStore) GetAllActive() ([]*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetAllActive(ctx context.Context) ([]*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.D{{}}
-	return store.filter(filter)
+	return store.filter(ctx, filter)
 }
 
-func (store *UserMongoDBStore) GetActiveByUsername(username string) (*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetActiveByUsername(ctx context.Context, username string) (*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"username": username}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store *UserMongoDBStore) GetByUsername(username string) (*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetByUsername(ctx context.Context, username string) (*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"username": username}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store *UserMongoDBStore) GetActiveByEmail(email string) (*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetActiveByEmail(ctx context.Context, email string) (*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"email": email}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store *UserMongoDBStore) GetByEmail(email string) (*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetByEmail(ctx context.Context, email string) (*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"email": email}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store *UserMongoDBStore) Insert(user *domain.RegisteredUser) error {
-	result, err := store.users.InsertOne(context.TODO(), user)
+func (store *UserMongoDBStore) Insert(ctx context.Context, user *domain.RegisteredUser) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	result, err := store.users.InsertOne(ctx, user)
 	if err != nil {
 		return err
 	}
@@ -67,22 +103,37 @@ func (store *UserMongoDBStore) Insert(user *domain.RegisteredUser) error {
 	return nil
 }
 
-func (store *UserMongoDBStore) UpdateIsActive(email string) error {
+func (store *UserMongoDBStore) UpdateIsActive(ctx context.Context, email string) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"email": email},
 		bson.D{{"$set", bson.D{{"is_active", true}}}},
 	)
 	return err
 }
 
-func (store *UserMongoDBStore) DeleteAll() {
-	store.users.DeleteMany(context.TODO(), bson.D{{}})
+func (store *UserMongoDBStore) DeleteAll(ctx context.Context) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	store.users.DeleteMany(ctx, bson.D{{}})
 }
 
-func (store *UserMongoDBStore) filter(filter interface{}) ([]*domain.RegisteredUser, error) {
-	cursor, err := store.users.Find(context.TODO(), filter)
-	defer cursor.Close(context.TODO())
+func (store *UserMongoDBStore) filter(ctx context.Context, filter interface{}) ([]*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	cursor, err := store.users.Find(ctx, filter)
+	defer cursor.Close(ctx)
 
 	if err != nil {
 		return nil, err
@@ -90,11 +141,16 @@ func (store *UserMongoDBStore) filter(filter interface{}) ([]*domain.RegisteredU
 	return decode(cursor)
 }
 
-func (store *UserMongoDBStore) Update(user *domain.RegisteredUser) (err error) {
+func (store *UserMongoDBStore) Update(ctx context.Context, user *domain.RegisteredUser) (err error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	fmt.Printf("Updating user %s %s\n", user.FirstName, user.Connections)
 	filter := bson.M{"_id": user.Id}
 	replacementObj := user
-	_, err = store.users.ReplaceOne(context.TODO(), filter, replacementObj)
+	_, err = store.users.ReplaceOne(ctx, filter, replacementObj)
 	fmt.Printf("Updated \n")
 	if err != nil {
 		return err
@@ -102,17 +158,27 @@ func (store *UserMongoDBStore) Update(user *domain.RegisteredUser) (err error) {
 	return nil
 }
 
-func (store *UserMongoDBStore) filterOne(filter interface{}) (user *domain.RegisteredUser, err error) {
-	result := store.users.FindOne(context.TODO(), filter)
+func (store *UserMongoDBStore) filterOne(ctx context.Context, filter interface{}) (user *domain.RegisteredUser, err error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	result := store.users.FindOne(ctx, filter)
 	err = result.Decode(&user)
 	return
 }
 
-func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) {
+func (store *UserMongoDBStore) GetBasicInfo(ctx context.Context) ([]*domain.RegisteredUser, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	projection := bson.D{{"first_name", 1}, {"last_name", 1}, {"is_active", true}}
 	opts := options.Find().SetProjection(projection)
-	cursor, err := store.users.Find(context.TODO(), bson.D{}, opts)
-	defer cursor.Close(context.TODO())
+	cursor, err := store.users.Find(ctx, bson.D{}, opts)
+	defer cursor.Close(ctx)
 
 	if err != nil {
 		return nil, err
@@ -120,19 +186,14 @@ func (store *UserMongoDBStore) GetBasicInfo() ([]*domain.RegisteredUser, error) 
 	return decode(cursor)
 }
 
-//func (store *UserMongoDBStore) FindByFilter(nameFilter string) ([]*domain.RegisteredUser, error) {
-//	filter := bson.D{
-//		{"first_name", primitive.Regex{Pattern: nameFilter, Options: "i"}},
-//		{"$or", []interface{}{
-//			bson.D{{"last_name", primitive.Regex{Pattern: nameFilter, Options: "i"}}},
-//		}},
-//	}
-//	return store.filter(filter)
-//}
+func (store *UserMongoDBStore) UpdatePersonalInfo(ctx context.Context, user *domain.RegisteredUser) (primitive.ObjectID, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
 
-func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (primitive.ObjectID, error) {
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	result, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id, "is_active": true},
 		bson.D{
 			{"$set", bson.D{{"first_name", user.FirstName},
@@ -150,11 +211,16 @@ func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.RegisteredUser) (
 	return objectId, err
 }
 
-func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) AddExperience(ctx context.Context, experience *domain.Experience, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	experiences := append(user.Experiences, *experience)
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"experiences", experiences}}},
@@ -164,11 +230,16 @@ func (store *UserMongoDBStore) AddExperience(experience *domain.Experience, user
 	return err
 }
 
-func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) AddEducation(ctx context.Context, education *domain.Education, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	educations := append(user.Educations, *education)
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"educations", educations}}},
@@ -178,10 +249,15 @@ func (store *UserMongoDBStore) AddEducation(education *domain.Education, userId 
 	return err
 }
 
-func (store *UserMongoDBStore) ChangeAccountPrivacy(isPrivate bool, username string) error {
-	user, _ := store.GetByUsername(username)
+func (store *UserMongoDBStore) ChangeAccountPrivacy(ctx context.Context, isPrivate bool, username string) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetByUsername(ctx, username)
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"is_private", isPrivate}}},
@@ -190,8 +266,13 @@ func (store *UserMongoDBStore) ChangeAccountPrivacy(isPrivate bool, username str
 	return err
 }
 
-func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) AddSkill(ctx context.Context, skill string, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	skillExists := util.ContainsStr(user.Skills, skill)
 	if skillExists {
 		err := errors.New("skill already exists")
@@ -199,7 +280,7 @@ func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID)
 	}
 	skills := append(user.Skills, skill)
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"skills", skills}}},
@@ -209,8 +290,13 @@ func (store *UserMongoDBStore) AddSkill(skill string, userId primitive.ObjectID)
 	return err
 }
 
-func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.ObjectID) error {
-	user, err := store.GetActiveById(userId)
+func (store *UserMongoDBStore) RemoveSkill(ctx context.Context, removeSkill string, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, err := store.GetActiveById(ctx, userId)
 	if err != nil {
 		return errors.New("no such user")
 	}
@@ -229,7 +315,7 @@ func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.
 	}
 
 	_, err = store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"skills", skills}}},
@@ -239,8 +325,13 @@ func (store *UserMongoDBStore) RemoveSkill(removeSkill string, userId primitive.
 	return err
 }
 
-func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) AddInterest(ctx context.Context, companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	interestExists := util.ContainsId(user.Interests, companyId)
 	if interestExists {
 		err := errors.New("interest already added")
@@ -248,7 +339,7 @@ func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId 
 	}
 	interests := append(user.Interests, companyId)
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"interests", interests}}},
@@ -258,14 +349,19 @@ func (store *UserMongoDBStore) AddInterest(companyId primitive.ObjectID, userId 
 	return err
 }
 
-func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) DeleteExperience(ctx context.Context, experienceId primitive.ObjectID, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	experiences, errDel := util.DeleteExperience(user.Experiences, experienceId)
 	if errDel != nil {
 		return errDel
 	}
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"experiences", experiences}}},
@@ -275,14 +371,19 @@ func (store *UserMongoDBStore) DeleteExperience(experienceId primitive.ObjectID,
 	return err
 }
 
-func (store *UserMongoDBStore) DeleteEducation(educationId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, _ := store.GetActiveById(userId)
+func (store *UserMongoDBStore) DeleteEducation(ctx context.Context, educationId primitive.ObjectID, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, _ := store.GetActiveById(ctx, userId)
 	educations, errDel := util.DeleteEducation(user.Educations, educationId)
 	if errDel != nil {
 		return errDel
 	}
 	_, err := store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"educations", educations}}},
@@ -292,8 +393,13 @@ func (store *UserMongoDBStore) DeleteEducation(educationId primitive.ObjectID, u
 	return err
 }
 
-func (store *UserMongoDBStore) RemoveInterest(companyId primitive.ObjectID, userId primitive.ObjectID) error {
-	user, err := store.GetActiveById(userId)
+func (store *UserMongoDBStore) RemoveInterest(ctx context.Context, companyId primitive.ObjectID, userId primitive.ObjectID) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	user, err := store.GetActiveById(ctx, userId)
 	if err != nil {
 		return errors.New("no such user")
 	}
@@ -312,7 +418,7 @@ func (store *UserMongoDBStore) RemoveInterest(companyId primitive.ObjectID, user
 	}
 
 	_, err = store.users.UpdateOne(
-		context.TODO(),
+		ctx,
 		bson.M{"_id": user.Id},
 		bson.D{
 			{"$set", bson.D{{"interests", interests}}},
