@@ -120,16 +120,15 @@ func (handler *UserHandler) DeleteConnectionRequest(ctx context.Context, request
 }
 
 func (handler *UserHandler) ChangeAccountPrivacy(ctx context.Context, request *pb.ReadPostsResponse) (*pb.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "API ChangeAccountPrivacy")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-
 	username, err := jwt.ExtractUsernameFromToken(ctx)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
+	span := tracer.StartSpanFromContext(ctx, "API ChangeAccountPrivacy")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	err = handler.service.ChangeAccountPrivacy(ctx, username, request.IsReadable)
 	if err != nil {
 		return nil, err
