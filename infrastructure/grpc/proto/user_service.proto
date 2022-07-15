@@ -1,0 +1,422 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_UserService/infrastructure/grpc/proto";
+
+package user;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service UserService{
+  rpc Get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/user/{id}"
+    };
+  }
+
+  rpc GetByUsername(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/in/{id}"
+    };
+  }
+
+  rpc GetByEmail(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/user/{id}/email"
+    };
+  }
+
+  rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/user"
+    };
+  }
+
+  rpc CreateUser(NewUser) returns(NewUser) {
+  }
+
+  rpc FindByFilter(UserFilter) returns(GetAllResponse){
+    option (google.api.http) = {
+      get: "/user/filter/{filter}"
+    };
+  }
+
+  rpc RequestConnection(ConnectionBody) returns(ConnectionResponse){
+    option (google.api.http) = {
+      post: "/connection-request"
+      body: "connection"
+    };
+  }
+
+  rpc CheckIfUserCanReadPosts(ConnectionBody) returns(ReadPostsResponse){
+    option (google.api.http) = {
+      post: "/user/check-read-posts"
+      body: "connection"
+    };
+  }
+
+  rpc GetRequestsForUser(GetRequest) returns(UserRequests){
+    option(google.api.http) = {
+      get: "/connection-request/by-user/{id}"
+    };
+  }
+
+  rpc AcceptConnectionRequest(GetRequest) returns(ConnectionResponse){
+    option(google.api.http) = {
+      post: "/connection-request/accept/{id}"
+    };
+  }
+
+  rpc UpdatePersonalInfo(UserInfoUpdate) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/{userInfo.id}",
+      body: "userInfo"
+    };
+  }
+
+  rpc AddExperience(ExperienceUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience",
+      body: "experienceUpdate"
+    };
+  }
+
+  rpc AddEducation(EducationUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education",
+      body: "educationUpdate"
+    };
+  }
+
+  rpc DeleteConnectionRequest(GetRequest) returns(ConnectionResponse){
+      option(google.api.http) = {
+        delete: "/connection-request/{id}"
+      };
+  }
+
+  rpc DeleteConnection(ConnectionBody) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/delete-connection"
+      body: "connection"
+    };
+  }
+
+  rpc AddSkill(SkillsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/skill",
+      body: "skill"
+    };
+  }
+
+  rpc AddInterest(InterestsUpdateRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/interest",
+      body: "interest"
+    };
+  }
+
+  rpc DeleteExperience(DeleteExperienceRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/experience/delete",
+      body: "deleteExperience"
+    };
+  }
+
+  rpc DeleteEducation(DeleteEducationRequest) returns(UserInfoUpdateResponse) {
+    option(google.api.http) = {
+      put: "/user/education/delete",
+      body: "deleteEducation"
+    };
+  }
+
+  rpc RemoveSkill(RemoveSkillRequest) returns(RemoveSkillResponse) {
+    option(google.api.http) = {
+      put: "/user/removeSkill",
+      body: "skill"
+    };
+  }
+
+  rpc RemoveInterest(RemoveInterestRequest) returns(RemoveInterestResponse) {
+    option(google.api.http) = {
+      put: "/user/removeInterest",
+      body: "interest"
+    };
+  }
+
+  rpc GetUsernames(ConnectionResponse) returns(UserConnectionUsernames) {
+    option(google.api.http) = {
+      get: "/user/connections/all",
+    };
+  }
+  rpc ChangeAccountPrivacy(ReadPostsResponse) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/account-privacy/{isReadable}",
+    };
+  }
+
+  rpc CreateNotification(NotificationRequest) returns(ConnectionResponse){}
+
+  rpc MessageNotification(Connection) returns(ConnectionResponse){}
+
+  rpc UpdateUserNotificationAlert(ReadPostsResponse) returns(ConnectionResponse){
+    option(google.api.http) = {
+      put: "/user/notifications/{isReadable}",
+    };
+  }
+
+  rpc GetNotificationsForUser(ConnectionResponse) returns(NotificationResponse){
+    option(google.api.http) = {
+      get: "/user/notifications",
+    };
+  }
+
+  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
+
+}
+message ConnectionResponse{}
+
+message ReadPostsResponse{
+  bool isReadable = 1;
+}
+
+message UserUsername{
+  string username = 1;
+}
+
+message UserConnectionUsernames{
+  repeated string usernames = 1;
+}
+
+message ConnectionBody{
+  Connection connection = 1;
+}
+
+message UserRequests{
+  repeated ConnectionRequest requests= 1;
+}
+
+message Connection{
+  string idFrom = 1;
+  string idTo = 2;
+}
+
+message UserFilter{
+  string filter = 1;
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  User user = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message NewUser {
+  User user = 1;
+}
+
+message User {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string phoneNumber = 5;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 6;
+
+  google.protobuf.Timestamp dateOfBirth = 7;
+  string biography = 8;
+  bool isPrivate = 9;
+  repeated Experience experiences = 10;
+  repeated Education educations = 11;
+  repeated string skills = 12;
+  repeated string interests = 13;
+  repeated string connections = 14;
+  string username = 15;
+  bool notification =16;
+}
+
+message Experience {
+  string id = 1;
+  string title = 2;
+
+  enum EmploymentType {
+      FULL_TIME = 0;
+      PART_TIME = 1;
+      INTERNSHIP = 2;
+  }
+
+  EmploymentType employmentType = 3;
+  string companyName = 4;
+  string location = 5;
+  bool isCurrentlyWorking = 6;
+  google.protobuf.Timestamp startDate = 7;
+  google.protobuf.Timestamp endDate = 8;
+  string industry = 9;
+  string description = 10;
+}
+
+message Education {
+  string id = 1;
+  string school = 2;
+
+  enum Degree {
+      ASSOCIATE = 0;
+      BACHELORS = 1;
+      MASTERS = 2;
+      DOCTORAL = 3;
+  }
+
+  Degree degree = 3;
+  string fieldOfStudy = 4;
+  google.protobuf.Timestamp startDate = 5;
+  google.protobuf.Timestamp endDate = 6;
+  string description = 7;
+}
+
+message ConnectionRequest {
+  string id = 1;
+  User from = 2;
+  User to = 3;
+  google.protobuf.Timestamp requestTime = 4;
+}
+
+message Notification{
+  string id=1;
+  string username=2;
+  NotificationType type=3;
+  google.protobuf.Timestamp created = 4;
+}
+
+message NotificationResponse{
+  repeated Notification notification=1;
+}
+
+message NotificationRequest{
+  NotificationDto notification=1;
+}
+
+message NotificationDto {
+  string username=1;
+  NotificationType type=2;
+}
+enum NotificationType{
+    CREATED_POST =0;
+    MESSAGED =1;
+}
+
+message UserInfo {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string phoneNumber = 4;
+  google.protobuf.Timestamp dateOfBirth = 5;
+  string biography = 6;
+
+  enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+  }
+
+  Gender gender = 7;
+  string email = 8;
+}
+
+message UserInfoUpdate {
+  UserInfo userInfo = 1;
+}
+
+message UserInfoUpdateResponse{
+  string id = 1;
+}
+
+message NewExperience {
+  string userId = 1;
+  Experience experience = 2;
+}
+
+message ExperienceUpdateRequest {
+  NewExperience experienceUpdate = 1;
+}
+
+message NewEducation {
+  string userId = 1;
+  Education education = 2;
+}
+
+message EducationUpdateRequest {
+  NewEducation educationUpdate = 1;
+}
+
+message Skill {
+  string skill = 1;
+  string userId = 2;
+}
+
+message SkillsUpdateRequest {
+  Skill skill = 1;
+}
+
+message Interest {
+  string companyId = 1;
+  string userId = 2;
+}
+
+message InterestsUpdateRequest {
+  Interest interest = 1;
+}
+
+message DeleteExperience {
+  string experienceId = 1;
+  string userId = 2;
+}
+
+message DeleteExperienceRequest {
+  DeleteExperience deleteExperience = 1;
+}
+
+message DeleteEducation {
+  string educationId = 1;
+  string userId = 2;
+}
+
+message DeleteEducationRequest {
+  DeleteEducation deleteEducation = 1;
+}
+
+message RemoveSkillRequest {
+  Skill skill = 1;
+}
+
+message RemoveSkillResponse {
+  string skill = 1;
+}
+
+message RemoveInterestRequest {
+  Interest interest = 1;
+}
+
+message RemoveInterestResponse {
+  string companyId = 1;
+}
+
+message ActivateAccountRequest {
+  string email = 1;
+}
+
+message ActivateAccountResponse {
+  string message = 1;
+}
